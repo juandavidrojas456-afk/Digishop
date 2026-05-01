@@ -1,0 +1,195 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- PHASE 3: PRIMITIVE DEFINITIONS ---
+
+    function isSignedIn() { return request.auth != null; }
+    function isVerified() { return isSignedIn() && request.auth.token.email_verified == true; }
+    
+    // Auth tokens NEVER contain custom claims. Look up roles in the users collection.
+    // NOTE: This get() call will be billed per rule evaluation.
+    function getUserData(uid) {
+      return get(/databases/$(database)/documents/users/$(uid)).data;
+    }
+    
+    function isAdmin() {
+      return isSignedIn() && getUserData(request.auth.uid).role == 'admin';
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    // --- PHASE 4: ENTITY VALIDATIONS ---
+
+    function isValidUser(data) {
+      return data.uid == request.auth.uid &&
+             data.email is string && data.email.size() <= 256 &&
+             data.role in ['customer', 'seller', 'admin'] &&
+             data.balance is number && data.balance >= 0 &&
+             (data.get('photoURL', '') is string) &&
+             (data.get('country', '') is string) &&
+             (data.get('affiliateCode', '') is string) &&
+             (data.get('referredBy', '') is string) &&
+             (data.createdAt == request.time || data.createdAt is string);
+    }
+
+    function isValidProduct(data) {
+      return data.name is string && data.name.size() > 0 &&
+             data.price is number && data.price >= 0 &&
+             data.category is string &&
+             (data.get('isPhysical', false) is bool) &&
+             data.sellerId == request.auth.uid;
+    }
+
+    function isValidCoupon(data) {
+      return data.code is string && data.code.size() > 0 &&
+             data.discountType in ['percentage', 'fixed'] &&
+             data.value is number && data.value > 0 &&
+             data.isActive is bool;
+    }
+
+    function isValidOrder(data) {
+      return data.buyerId == request.auth.uid &&
+             data.productId is string &&
+             data.productName is string &&
+             data.amount is number && data.amount >= 0 &&
+             (data.get('shippingCost', 0) is number) &&
+             (data.get('shippingMethod', '') is string) &&
+             data.status in ['pending', 'paid', 'delivered', 'cancelled'];
+    }
+
+    function isValidReview(data) {
+      return data.productId is string && isValidId(data.productId) &&
+             data.userId == request.auth.uid &&
+             data.rating is int && data.rating >= 1 && data.rating <= 5 &&
+             data.comment is string && data.comment.size() <= 1000 &&
+             data.createdAt == request.time;
+    }
+
+    function isValidChat(data) {
+       return data.participants is list && 
+              data.participants.size() >= 2 && 
+              data.participants.size() <= 10 &&
+              request.auth.uid in data.participants &&
+              data.updatedAt == request.time;
+    }
+
+    function isValidMessage(data, chatId) {
+      return data.chatId == chatId &&
+             data.senderId == request.auth.uid &&
+             data.content is string && data.content.size() <= 5000 &&
+             data.createdAt == request.time;
+    }
+
+    // --- MATCH BLOCKS ---
+
+    // 1. USERS
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isSignedIn() && isOwner(userId) && 
+        isValidUser(incoming()) && 
+        incoming().balance == 0 &&
+        (incoming().role == 'customer' || (incoming().role == 'admin' && incoming().email == 'juandavidrojas456@gmail.com')) &&
+        incoming().keys().hasAll(['uid', 'email', 'role', 'balance', 'createdAt']);
+      
+      allow update: if (isSignedIn() && isOwner(userId) && 
+        incoming().diff(existing()).affectedKeys().hasOnly(['country', 'email', 'affiliateCode', 'photoURL'])) || 
+        isAdmin();
+    }
+
+    // 2. PRODUCTS
+    match /products/{productId} {
+      function isProductOwner() {
+        return isSignedIn() && existing().sellerId == request.auth.uid;
+      }
+
+      allow read: if true; // Public marketplace
+      
+      allow create: if isVerified() && 
+        isValidProduct(incoming()) && 
+        incoming().keys().hasAll(['name', 'price', 'category', 'sellerId', 'createdAt']);
+
+      allow update: if (isVerified() && isProductOwner() && 
+        isValidProduct(incoming())) || isAdmin();
+
+      allow delete: if isAdmin() || isProductOwner();
+    }
+
+    // 3. ORDERS
+    match /orders/{orderId} {
+      allow get: if isSignedIn() && (existing().buyerId == request.auth.uid || existing().sellerId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && (resource.data.buyerId == request.auth.uid || resource.data.sellerId == request.auth.uid || isAdmin());
+      
+      allow create: if isVerified() && 
+        isValidOrder(incoming()) &&
+        incoming().keys().hasAll(['buyerId', 'productId', 'amount', 'status', 'createdAt']);
+
+      allow update: if (isVerified() && (
+        // Action: Pay (Buyer)
+        (existing().buyerId == request.auth.uid && existing().status == 'pending' && incoming().status == 'paid' && incoming().diff(existing()).affectedKeys().hasOnly(['status'])) ||
+        // Action: Deliver (Seller)
+        (existing().sellerId == request.auth.uid && existing().status == 'paid' && incoming().status == 'delivered' && incoming().diff(existing()).affectedKeys().hasOnly(['status']))
+      )) || isAdmin();
+    }
+
+    // 4. REVIEWS
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isVerified() && isValidReview(incoming()) &&
+        incoming().keys().hasAll(['productId', 'userId', 'rating', 'comment', 'createdAt']) &&
+        incoming().keys().size() == 5;
+      
+      allow delete: if isAdmin() || (isSignedIn() && existing().userId == request.auth.uid);
+    }
+
+    // 6. SETTINGS
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 7. COUPONS
+    match /coupons/{couponId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 5. CHATS
+    match /chats/{chatId} {
+      function isParticipant() {
+        return isSignedIn() && request.auth.uid in existing().participants;
+      }
+
+      allow get: if isParticipant() || isAdmin();
+      allow list: if isSignedIn() && request.auth.uid in resource.data.participants;
+      
+      allow create: if isVerified() && isValidChat(incoming());
+      
+      allow update: if (isVerified() && isParticipant() && 
+        incoming().diff(existing()).affectedKeys().hasOnly(['lastMessage', 'updatedAt']) &&
+        incoming().updatedAt == request.time) || isAdmin();
+
+      match /messages/{messageId} {
+        allow read, list: if isParticipant() || isAdmin();
+        allow create: if isVerified() && 
+          isParticipant() && 
+          isValidMessage(incoming(), chatId) &&
+          incoming().keys().size() == 5;
+      }
+    }
+  }
+}

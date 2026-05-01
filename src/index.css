@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+@theme {
+  --color-steam-bg: #0D1B2A;
+  --color-steam-card: #16263B;
+  --color-steam-dark: #08121C;
+  --color-steam-blue: #3498DB;
+  --color-steam-green: #2ECC71;
+  --color-steam-orange: #F39C12;
+  --color-steam-accent: #E5E5E5;
+}
+
+@utility no-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+@layer base {
+  body {
+    background-color: #08121C;
+    color: #E5E5E5;
+    font-family: inherit;
+  }
+}
+
+.steam-gradient {
+  background: linear-gradient(180deg, #2a475e 0%, #1b2838 100%);
+}
+
+.glass-panel {
+  background: rgba(42, 71, 94, 0.4);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(102, 192, 244, 0.2);
+}

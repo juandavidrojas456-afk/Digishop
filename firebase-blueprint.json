@@ -1,0 +1,175 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "System user with role-based permissions",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "seller", "customer"] },
+        "country": { "type": "string" },
+        "balance": { "type": "number" },
+        "affiliateCode": { "type": "string" },
+        "referredBy": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role", "balance", "createdAt"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Digital game or service for sale",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "originalPrice": { "type": "number" },
+        "category": { "type": "string" },
+        "badgeType": { "type": "string", "description": "Label like 'CONTA', 'ITEM', 'KEYS'" },
+        "images": { "type": "array", "items": { "type": "string" } },
+        "stock": { "type": "integer" },
+        "sellerId": { "type": "string" },
+        "isPhysical": { "type": "boolean" },
+        "isAutoDelivery": { "type": "boolean" },
+        "deliveryContent": { "type": "string" },
+        "autoMessage": { "type": "string", "description": "Initial chat message sent after purchase" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "price", "category", "sellerId"]
+    },
+    "Coupon": {
+      "title": "Coupon",
+      "description": "Discount code for the store",
+      "type": "object",
+      "properties": {
+        "code": { "type": "string" },
+        "discountType": { "type": "string", "enum": ["percentage", "fixed"] },
+        "value": { "type": "number" },
+        "isActive": { "type": "boolean" },
+        "expiresAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["code", "discountType", "value"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Transaction record for a purchase",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "buyerId": { "type": "string" },
+        "sellerId": { "type": "string" },
+        "productId": { "type": "string" },
+        "productName": { "type": "string" },
+        "amount": { "type": "number" },
+        "shippingCost": { "type": "number" },
+        "shippingMethod": { "type": "string" },
+        "shippingAddress": {
+          "type": "object",
+          "properties": {
+            "street": { "type": "string" },
+            "city": { "type": "string" },
+            "zipCode": { "type": "string" }
+          }
+        },
+        "status": { "type": "string", "enum": ["pending", "paid", "delivered", "cancelled"] },
+        "deliveryKey": { "type": "string" },
+        "paymentMethod": { "type": "string" },
+        "affiliateId": { "type": "string" },
+        "affiliateEarnings": { "type": "number" },
+        "ownerEarnings": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["buyerId", "sellerId", "productId", "amount", "status"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "User feedback for a product",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "productId": { "type": "string" },
+        "userId": { "type": "string" },
+        "rating": { "type": "integer" },
+        "comment": { "type": "string" },
+        "rewardClaimed": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["productId", "userId", "rating"]
+    },
+    "Chat": {
+      "title": "Chat",
+      "description": "Direct message session",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "participants": { "type": "array", "items": { "type": "string" } },
+        "lastMessage": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["participants"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Individual chat message",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "chatId": { "type": "string" },
+        "senderId": { "type": "string" },
+        "content": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["chatId", "senderId", "content"]
+    },
+    "Setting": {
+      "title": "Setting",
+      "description": "Site-wide configuration and theme settings",
+      "type": "object",
+      "properties": {
+        "primaryColor": { "type": "string" },
+        "secondaryColor": { "type": "string" },
+        "accentColor": { "type": "string" },
+        "siteName": { "type": "string" },
+        "storeName": { "type": "string" },
+        "tagline": { "type": "string" },
+        "activeBanner": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile data"
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Store products"
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Transaction history"
+    },
+    "/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Product reviews"
+    },
+    "/coupons/{couponId}": {
+      "schema": "Coupon",
+      "description": "Store discount coupons"
+    },
+    "/settings/{settingId}": {
+      "schema": "Setting",
+      "description": "Site global settings"
+    },
+    "/chats/{chatId}": {
+      "schema": "Chat",
+      "description": "Chat sessions"
+    },
+    "/chats/{chatId}/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Individual messages within a chat"
+    }
+  }
+}

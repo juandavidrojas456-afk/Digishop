@@ -1,0 +1,160 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { auth, db, handleFirestoreError, OperationType } from '../lib/firebase';
+import { Gamepad2, Mail, Lock, Chrome } from 'lucide-react';
+
+const AuthPage = () => {
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    try {
+      if (isLogin) {
+        await signInWithEmailAndPassword(auth, email, password);
+      } else {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        const isAdmin = email.toLowerCase() === 'juandavidrojas456@gmail.com';
+        const userPath = `users/${cred.user.uid}`;
+        try {
+          await setDoc(doc(db, 'users', cred.user.uid), {
+            uid: cred.user.uid,
+            email: cred.user.email,
+            role: isAdmin ? 'admin' : 'customer',
+            balance: 0,
+            createdAt: serverTimestamp()
+          });
+        } catch (dbErr) {
+          handleFirestoreError(dbErr, OperationType.WRITE, userPath);
+        }
+      }
+      navigate('/');
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const userPath = `users/${result.user.uid}`;
+      try {
+        const userDoc = await getDoc(doc(db, 'users', result.user.uid));
+        if (!userDoc.exists()) {
+          const isAdmin = result.user.email?.toLowerCase() === 'juandavidrojas456@gmail.com';
+          await setDoc(doc(db, 'users', result.user.uid), {
+            uid: result.user.uid,
+            email: result.user.email,
+            photoURL: result.user.photoURL || '',
+            role: isAdmin ? 'admin' : 'customer',
+            balance: 0,
+            createdAt: serverTimestamp()
+          });
+        }
+      } catch (dbErr) {
+        // If it was a getDoc failure, type is GET, if setDoc, type is WRITE
+        const opType = (dbErr as any).code === 'permission-denied' ? OperationType.GET : OperationType.WRITE;
+        handleFirestoreError(dbErr, opType, userPath);
+      }
+      navigate('/');
+    } catch (err: any) {
+      if (err.code === 'auth/popup-blocked') {
+        setError('Login popup was blocked by your browser. Please allow popups and try again.');
+      } else {
+        setError(err.message);
+      }
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-[80vh]">
+      <div className="w-full max-w-md bg-steam-bg border border-steam-card rounded-lg p-8 space-y-6">
+        <div className="text-center space-y-2">
+          <Gamepad2 className="w-12 h-12 text-steam-blue mx-auto" />
+          <h1 className="text-3xl font-bold text-white uppercase italic">
+            {isLogin ? 'Sign In' : 'Create Account'}
+          </h1>
+          <p className="text-steam-accent text-sm">Join the largest digital marketplace</p>
+        </div>
+
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/50 text-red-500 text-xs p-3 rounded">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleAuth} className="space-y-4">
+          <div className="space-y-1">
+            <label className="text-xs font-bold uppercase tracking-wider text-steam-accent">Email Address</label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-steam-accent/50" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full bg-steam-dark border border-steam-card rounded py-2 pl-10 pr-4 focus:outline-none focus:border-steam-blue text-sm transition-colors"
+                placeholder="you@example.com"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-bold uppercase tracking-wider text-steam-accent">Password</label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-steam-accent/50" />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full bg-steam-dark border border-steam-card rounded py-2 pl-10 pr-4 focus:outline-none focus:border-steam-blue text-sm transition-colors"
+                placeholder="••••••••"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-steam-blue hover:bg-opacity-80 text-steam-dark font-bold py-2.5 rounded transition-all"
+          >
+            {isLogin ? 'Login' : 'Join SteamLink'}
+          </button>
+        </form>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-steam-card" /></div>
+          <div className="relative flex justify-center text-xs uppercase"><span className="bg-steam-bg px-2 text-steam-accent">Or continue with</span></div>
+        </div>
+
+        <button
+          onClick={handleGoogleSignIn}
+          className="w-full bg-white hover:bg-steam-accent text-black font-bold py-2.5 rounded flex items-center justify-center gap-2 transition-all"
+        >
+          <Chrome className="w-4 h-4" />
+          Google Account
+        </button>
+
+        <p className="text-center text-xs text-steam-accent">
+          {isLogin ? "Don't have an account?" : "Already have an account?"}
+          <button
+            onClick={() => setIsLogin(!isLogin)}
+            className="text-steam-blue ml-1 font-bold hover:underline"
+          >
+            {isLogin ? 'Join now' : 'Sign in'}
+          </button>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default AuthPage;
