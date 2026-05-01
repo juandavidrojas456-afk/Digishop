@@ -62,7 +62,7 @@ const Profile = () => {
 
             <div className="pt-4 border-t border-steam-card">
               <span className="text-xs text-steam-accent block mb-1">Saldo</span>
-              <span className="text-2xl font-bold text-steam-green">${profile?.balance?.toFixed(2) || '0.00'}</span>
+              <span className="text-2xl font-bold text-steam-green">COP {profile?.balance?.toLocaleString('es-CO') || '0'}</span>
             </div>
           </div>
 
@@ -132,7 +132,7 @@ const Profile = () => {
                   </div>
 
                   <div className="text-right">
-                    <span className="block text-xl font-bold text-white">${order.amount.toFixed(2)}</span>
+                    <span className="block text-xl font-bold text-white">$ {order.amount.toLocaleString('es-CO')}</span>
                     <span className="text-[10px] text-steam-accent uppercase tracking-widest">{order.paymentMethod}</span>
                   </div>
                 </div>

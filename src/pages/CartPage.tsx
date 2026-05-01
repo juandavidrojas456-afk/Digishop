@@ -70,7 +70,7 @@ const CartPage = () => {
               <img src={item.image} alt={item.name} className="w-16 h-16 md:w-20 md:h-20 object-cover rounded shadow-lg" referrerPolicy="no-referrer" />
               <div className="flex-1 min-w-0">
                 <h3 className="font-bold text-white text-sm md:text-base truncate">{item.name}</h3>
-                <p className="text-steam-green font-bold text-xs md:text-sm">$ {item.price.toFixed(2)}</p>
+                <p className="text-steam-green font-bold text-xs md:text-sm">$ {item.price.toLocaleString('es-CO')}</p>
               </div>
               
               <div className="flex items-center gap-2 md:gap-3 bg-steam-bg border border-steam-card px-2 py-0.5 md:px-3 md:py-1 rounded-lg scale-90 md:scale-100">
@@ -90,7 +90,7 @@ const CartPage = () => {
               </div>
 
               <div className="text-right min-w-[60px] md:min-w-[80px] hidden sm:block">
-                <p className="text-white font-black text-sm italic">$ {(item.price * item.quantity).toFixed(2)}</p>
+                <p className="text-white font-black text-sm italic">$ {(item.price * item.quantity).toLocaleString('es-CO')}</p>
               </div>
 
               <button
@@ -111,25 +111,15 @@ const CartPage = () => {
           <div className="space-y-2 text-sm">
             <div className="flex justify-between text-steam-accent">
               <span>Subtotal</span>
-              <span>$ {total.toFixed(2)}</span>
+              <span>$ {total.toLocaleString('es-CO')}</span>
             </div>
             <div className="flex justify-between text-steam-accent">
               <span>Tasas</span>
               <span className="text-steam-green">GRATIS</span>
             </div>
-            <div className="pt-2 border-t border-steam-bg flex justify-between text-xl font-bold text-white">
+            <div className="pt-2 border-t border-steam-bg flex justify-between text-lg font-bold text-white">
               <span>Total</span>
-              <span className="text-steam-green">$ {total.toFixed(2)}</span>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="text-xs font-bold uppercase text-steam-accent tracking-widest">Método de Pago</h3>
-            <div className="grid grid-cols-2 gap-2">
-              <PaymentChoice id="pix" label="Pix" active={paymentMethod === 'pix'} onClick={() => setPaymentMethod('pix')} />
-              <PaymentChoice id="nequi" label="Nequi" active={paymentMethod === 'nequi'} onClick={() => setPaymentMethod('nequi')} />
-              <PaymentChoice id="card" label="Tarjeta" active={paymentMethod === 'card'} onClick={() => setPaymentMethod('card')} />
-              <PaymentChoice id="crypto" label="Crypto" active={paymentMethod === 'crypto'} onClick={() => setPaymentMethod('crypto')} />
+              <span className="text-steam-green">$ {total.toLocaleString('es-CO')}</span>
             </div>
           </div>
 

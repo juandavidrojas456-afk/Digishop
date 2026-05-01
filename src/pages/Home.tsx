@@ -45,7 +45,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="space-y-12 pb-20">
+    <div className="space-y-12 pb-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Hero Section */}
       <section className="relative h-[350px] md:h-[450px] rounded-2xl md:rounded-[2rem] overflow-hidden group shadow-2xl border border-steam-card/40">
         <img 

@@ -130,7 +130,7 @@ const Navbar = () => {
                         <h4 className="text-white font-bold text-sm truncate uppercase italic tracking-tighter">{product.name}</h4>
                         <div className="flex items-center gap-2">
                           <span className="text-[10px] text-steam-blue font-black uppercase">{product.category}</span>
-                          <span className="text-xs text-steam-green font-bold italic">$ {product.price?.toFixed(2)}</span>
+                          <span className="text-xs text-steam-green font-bold italic">$ {product.price?.toLocaleString('es-CO')}</span>
                         </div>
                       </div>
                       <ArrowRight className="w-4 h-4 text-steam-accent opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />

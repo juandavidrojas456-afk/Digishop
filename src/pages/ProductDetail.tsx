@@ -221,12 +221,11 @@ const ProductDetail = () => {
               
               <div className="flex flex-col">
                 {product.originalPrice > product.price && (
-                  <span className="text-steam-accent line-through text-base md:text-lg font-bold">$ {product.originalPrice.toFixed(2)}</span>
+                  <span className="text-steam-accent line-through text-base md:text-lg font-bold">$ {product.originalPrice.toLocaleString('es-CO')}</span>
                 )}
                 <div className="flex items-baseline gap-1 md:gap-2">
-                  <span className="text-[10px] md:text-xs font-black text-steam-blue uppercase">$</span>
-                  <span className="text-4xl md:text-6xl font-black text-white italic tracking-tighter">{product.price.toFixed(2).split('.')[0]}</span>
-                  <span className="text-xl md:text-2xl font-black text-white italic tracking-tighter opacity-80">{product.price.toFixed(2).split('.')[1]}</span>
+                  <span className="text-[10px] md:text-xs font-black text-steam-blue uppercase">COP</span>
+                  <span className="text-3xl md:text-5xl font-black text-white italic tracking-tighter">{product.price.toLocaleString('es-CO')}</span>
                 </div>
               </div>
             </div>

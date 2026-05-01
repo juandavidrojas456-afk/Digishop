@@ -81,7 +81,7 @@ const ProductCard = ({ product }: { product: Product }) => {
               {product.sellerName || 'Verificado'}
             </span>
           </div>
-          <h3 className="text-lg font-black text-white group-hover:text-steam-blue transition-colors line-clamp-2 leading-tight uppercase italic tracking-tighter">
+          <h3 className="text-[17px] leading-[21.5px] font-[Arial] font-black text-white group-hover:text-steam-blue transition-colors line-clamp-2 uppercase italic tracking-tighter">
             {product.name}
           </h3>
         </div>
@@ -90,11 +90,11 @@ const ProductCard = ({ product }: { product: Product }) => {
           <div className="flex flex-col">
             {product.originalPrice && (
               <span className="text-[10px] text-white/20 line-through leading-none mb-1 font-bold">
-                $ {product.originalPrice.toFixed(2)}
+                $ {product.originalPrice.toLocaleString('es-CO')}
               </span>
             )}
-            <span className="text-2xl font-black text-white italic leading-none tracking-tighter">
-              $ {product.price.toFixed(2)}
+            <span className="text-xl font-black text-white italic leading-none tracking-tighter">
+              $ {product.price.toLocaleString('es-CO')}
             </span>
           </div>
           
