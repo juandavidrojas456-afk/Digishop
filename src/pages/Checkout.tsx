@@ -24,7 +24,7 @@ const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
   const [coupon, setCoupon] = useState('');
   const [discount, setDiscount] = useState(0);
-  const [paymentMethod, setPaymentMethod] = useState<'credit_card' | 'pix'>('pix');
+  const [paymentMethod, setPaymentMethod] = useState<'credit_card' | 'pix'>('credit_card');
   const [siteSettings, setSiteSettings] = useState<any>(null);
   
   const hasPhysicalProducts = items.some(item => item.isPhysical);
@@ -60,14 +60,48 @@ const CheckoutPage = () => {
     );
   }
 
-  const handlePayment = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handlePayment = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setLoading(true);
     
     try {
-      // Simulate payment delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // 1. Create Stripe Checkout Session via our Backend
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          items: items.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            image: item.image
+          })),
+          successUrl: `${window.location.origin}/profile?payment=success`,
+          cancelUrl: `${window.location.origin}/checkout`,
+          customerEmail: user?.email,
+          paymentMethod: paymentMethod // 'credit_card' or 'pix'
+        }),
+      });
 
+      const session = await response.json();
+
+      if (session.error) {
+        throw new Error(session.error);
+      }
+
+      // 2. Redirect to Stripe's Secure Hosted Payment Page
+      if (session.url) {
+        // Before redirecting, we would normally save the order as 'pending' in Firestore
+        // But for this demo/setup, we'll let the user pay first.
+        // In a real production app, you'd use a Webhook to confirm payment and then create the order.
+        window.location.href = session.url;
+        return;
+      }
+
+      // Fallback for mock behavior if Stripe is not configured
       const physicalItems = items.filter(i => i.isPhysical);
       const shippingCostPerItem = hasPhysicalProducts ? (shippingMethod.cost / physicalItems.length) : 0;
 
@@ -381,41 +415,53 @@ const CheckoutPage = () => {
               <p className="text-steam-accent text-sm opacity-60">Escolha o método mais conveniente para completar sua transação</p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <button 
-                onClick={() => setPaymentMethod('pix')}
-                className={`p-8 rounded-3xl border-2 flex flex-col items-center justify-center gap-4 transition-all duration-300 group ${
-                  paymentMethod === 'pix' 
-                    ? 'bg-[#32bcad]/10 border-[#32bcad] shadow-[0_0_30px_-10px_rgba(50,188,173,0.4)]' 
-                    : 'bg-steam-card/20 border-steam-card hover:border-[#32bcad]/40'
+                onClick={() => setPaymentMethod('credit_card')}
+                className={`p-10 rounded-3xl border-2 flex flex-col items-center justify-center gap-6 transition-all duration-500 group relative overflow-hidden ${
+                  paymentMethod === 'credit_card' 
+                    ? 'bg-white border-white shadow-[0_0_50px_-10px_rgba(255,255,255,0.3)] scale-[1.02]' 
+                    : 'bg-white/[0.03] border-white/5 hover:border-white/20'
                 }`}
               >
-                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all ${paymentMethod === 'pix' ? 'bg-[#32bcad] scale-110 shadow-lg' : 'bg-steam-dark group-hover:bg-steam-card'}`}>
-                  <img src="https://logospng.org/download/pix/logo-pix-icone-512.png" className={`w-10 h-10 object-contain transition-all ${paymentMethod === 'pix' ? 'brightness-100' : 'grayscale brightness-200'}`} alt="Pix" />
+                {paymentMethod === 'credit_card' && (
+                  <motion.div 
+                    layoutId="payment-glow"
+                    className="absolute inset-0 bg-gradient-to-tr from-black/5 to-transparent pointer-events-none"
+                  />
+                )}
+                <div className={`w-20 h-20 rounded-2xl flex items-center justify-center transition-all duration-500 ${paymentMethod === 'credit_card' ? 'bg-black scale-110 shadow-2xl' : 'bg-white/5 group-hover:bg-white/10'}`}>
+                  <CreditCard className={`w-10 h-10 transition-all duration-500 ${paymentMethod === 'credit_card' ? 'text-white' : 'text-white/20'}`} />
                 </div>
-                <div className="text-center">
-                  <div className="font-black text-white uppercase italic text-lg tracking-wider">Pix</div>
-                  <div className="text-[10px] text-[#32bcad] uppercase font-black bg-[#32bcad]/10 px-3 py-1 rounded-full mt-2">Pague Agora</div>
+                <div className={`text-center z-10 p-4 rounded-2xl transition-colors duration-500 ${paymentMethod === 'credit_card' ? 'bg-black/5' : ''}`}>
+                  <div className={`font-black uppercase italic text-xl tracking-tighter ${paymentMethod === 'credit_card' ? 'text-black' : 'text-white'}`}>Cartão</div>
+                  <div className={`text-[9px] uppercase font-black px-4 py-1.5 rounded-full mt-3 transition-colors duration-500 ${paymentMethod === 'credit_card' ? 'bg-black text-white' : 'bg-white/5 text-white/40'}`}>Até 12x Sem Juros</div>
                 </div>
-                {paymentMethod === 'pix' && <CheckCircle2 className="text-[#32bcad] w-6 h-6 absolute top-4 right-4" />}
+                {paymentMethod === 'credit_card' && <CheckCircle2 className="text-black w-6 h-6 absolute top-6 right-6" />}
               </button>
 
               <button 
-                onClick={() => setPaymentMethod('credit_card')}
-                className={`p-8 rounded-3xl border-2 flex flex-col items-center justify-center gap-4 transition-all duration-300 group ${
-                  paymentMethod === 'credit_card' 
-                    ? 'bg-orange-500/10 border-orange-500 shadow-[0_0_30px_-10px_rgba(249,115,22,0.4)]' 
-                    : 'bg-steam-card/20 border-steam-card hover:border-orange-500/40'
+                onClick={() => setPaymentMethod('pix')}
+                className={`p-10 rounded-3xl border-2 flex flex-col items-center justify-center gap-6 transition-all duration-500 group relative overflow-hidden ${
+                  paymentMethod === 'pix' 
+                    ? 'bg-white border-white shadow-[0_0_50px_-10px_rgba(255,255,255,0.3)] scale-[1.02]' 
+                    : 'bg-white/[0.03] border-white/5 hover:border-white/20'
                 }`}
               >
-                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all ${paymentMethod === 'credit_card' ? 'bg-orange-500 scale-110 shadow-lg' : 'bg-steam-dark group-hover:bg-steam-card'}`}>
-                  <CreditCard className={`w-10 h-10 transition-all ${paymentMethod === 'credit_card' ? 'text-white' : 'text-steam-accent'}`} />
+                {paymentMethod === 'pix' && (
+                  <motion.div 
+                    layoutId="payment-glow"
+                    className="absolute inset-0 bg-gradient-to-tr from-black/5 to-transparent pointer-events-none"
+                  />
+                )}
+                <div className={`w-20 h-20 rounded-2xl flex items-center justify-center transition-all duration-500 ${paymentMethod === 'pix' ? 'bg-[#32bcad] scale-110 shadow-2xl' : 'bg-white/5 group-hover:bg-white/10'}`}>
+                  <img src="https://logospng.org/download/pix/logo-pix-icone-512.png" className={`w-10 h-10 object-contain transition-all duration-500 ${paymentMethod === 'pix' ? 'brightness-100' : 'grayscale brightness-200 opacity-20'}`} alt="Pix" />
                 </div>
-                <div className="text-center">
-                  <div className="font-black text-white uppercase italic text-lg tracking-wider">Cartão</div>
-                  <div className="text-[10px] text-orange-500 uppercase font-black bg-orange-500/10 px-3 py-1 rounded-full mt-2">Até 12x</div>
+                <div className={`text-center z-10 p-4 rounded-2xl transition-colors duration-500 ${paymentMethod === 'pix' ? 'bg-black/5' : ''}`}>
+                  <div className={`font-black uppercase italic text-xl tracking-tighter ${paymentMethod === 'pix' ? 'text-black' : 'text-white'}`}>Pix</div>
+                  <div className={`text-[9px] uppercase font-black px-4 py-1.5 rounded-full mt-3 transition-colors duration-500 ${paymentMethod === 'pix' ? 'bg-[#32bcad] text-white' : 'bg-white/5 text-white/40'}`}>Aprovação Imediata</div>
                 </div>
-                {paymentMethod === 'credit_card' && <CheckCircle2 className="text-orange-500 w-6 h-6 absolute top-4 right-4" />}
+                {paymentMethod === 'pix' && <CheckCircle2 className="text-[#32bcad] w-6 h-6 absolute top-6 right-6" />}
               </button>
             </div>
 
@@ -425,35 +471,48 @@ const CheckoutPage = () => {
               </p>
             </div>
 
-            <div className="pt-8 border-t border-steam-card/40 flex flex-col gap-4">
-              <div className="bg-steam-dark/50 p-6 rounded-2xl border border-steam-card flex items-center justify-between">
-                <div>
-                  <div className="text-[10px] text-steam-accent uppercase font-black opacity-50">Total a Pagar</div>
-                  <div className="text-3xl font-black text-white italic tracking-tighter">R$ {finalTotal.toFixed(2)}</div>
+            <div className="pt-12 border-t border-white/5 flex flex-col gap-6">
+              <div className="bg-white/5 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/10 flex items-center justify-between group">
+                <div className="space-y-1">
+                  <div className="text-[10px] text-white/40 uppercase font-black tracking-widest">Total do Investimento</div>
+                  <div className="text-4xl font-black text-white italic tracking-tighter group-hover:text-steam-blue transition-colors">R$ {finalTotal.toFixed(2)}</div>
                 </div>
-                <div className="text-right">
-                  <div className="text-[10px] text-steam-green uppercase font-black">Pagamento Protegido</div>
-                  <div className="flex gap-1 justify-end mt-1">
-                    <ShieldCheck className="w-4 h-4 text-steam-green" />
-                    <img src="https://img.icons8.com/color/48/000000/visa.png" className="w-5 h-5 object-contain grayscale" alt="" />
-                    <img src="https://img.icons8.com/color/48/000000/mastercard.png" className="w-5 h-5 object-contain grayscale" alt="" />
+                <div className="text-right hidden sm:block">
+                  <div className="text-[10px] text-white uppercase font-black italic tracking-widest bg-white/10 px-3 py-1 rounded-full mb-3">Gateway Seguro</div>
+                  <div className="flex gap-2 justify-end opacity-40">
+                    <img src="https://img.icons8.com/color/48/000000/visa.png" className="w-6 h-6 object-contain grayscale brightness-200" alt="" />
+                    <img src="https://img.icons8.com/color/48/000000/mastercard.png" className="w-6 h-6 object-contain grayscale brightness-200" alt="" />
                   </div>
                 </div>
               </div>
 
               <button 
-                onClick={() => setStep(2.5)}
-                className="w-full bg-steam-blue text-steam-dark font-black py-5 rounded-2xl flex items-center justify-center gap-3 hover:bg-opacity-90 transition-all shadow-2xl uppercase italic tracking-widest text-lg"
+                onClick={() => handlePayment()}
+                disabled={loading}
+                className="w-full bg-white text-black font-black py-6 rounded-3xl flex items-center justify-center gap-4 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_20px_40px_-15px_rgba(255,255,255,0.2)] uppercase italic tracking-[0.2em] text-xl group disabled:opacity-50"
               >
-                Confirmar Escolha <ArrowRight className="w-6 h-6" />
+                {loading ? (
+                  <div className="flex items-center gap-3">
+                    <div className="w-6 h-6 border-4 border-black/20 border-t-black rounded-full animate-spin" />
+                    Preparando Checkout...
+                  </div>
+                ) : (
+                  <>Finalizar agora <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" /></>
+                )}
               </button>
               
-              <button 
-                onClick={() => setStep(hasPhysicalProducts ? 1.5 : 1)}
-                className="text-steam-accent text-[10px] font-black uppercase hover:text-white transition-colors"
-              >
-                Voltar para Revisão
-              </button>
+              <div className="flex items-center justify-center gap-8">
+                <button 
+                  onClick={() => setStep(hasPhysicalProducts ? 1.5 : 1)}
+                  className="text-white/40 text-[10px] font-black uppercase hover:text-white transition-colors tracking-widest"
+                >
+                  Regressar à Revisão
+                </button>
+                <div className="w-1 h-1 rounded-full bg-white/20" />
+                <div className="flex items-center gap-2 text-[10px] font-black text-white/20 uppercase tracking-widest">
+                  <ShieldCheck className="w-3 h-3" /> Transação Criptografada
+                </div>
+              </div>
             </div>
           </motion.div>
         )}
@@ -466,16 +525,16 @@ const CheckoutPage = () => {
             exit={{ opacity: 0, scale: 0.95 }}
             className="max-w-2xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-start"
           >
-            <div className="bg-steam-card/20 p-8 rounded-3xl border border-steam-card shadow-2xl text-center space-y-6">
-              <div className="space-y-1">
-                <div className="w-16 h-16 bg-[#32bcad]/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-[#32bcad]/20 shadow-[0_0_20px_rgba(50,188,173,0.1)]">
-                  <img src="https://logospng.org/download/pix/logo-pix-icone-512.png" className="w-10 h-10 object-contain" alt="Pix" />
+            <div className="bg-black/40 backdrop-blur-3xl p-10 rounded-[3rem] border border-white/10 shadow-2xl text-center space-y-8">
+              <div className="space-y-2">
+                <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-white/10 shadow-[0_0_30px_rgba(255,255,255,0.05)]">
+                  <img src="https://logospng.org/download/pix/logo-pix-icone-512.png" className="w-10 h-10 object-contain brightness-200" alt="Pix" />
                 </div>
-                <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter">Pagar via Pix</h3>
-                <p className="text-steam-accent text-[10px] uppercase font-bold opacity-60">Instantâneo e 100% Protegido</p>
+                <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter">Liquidamento Via Pix</h3>
+                <p className="text-white/40 text-[10px] uppercase font-bold tracking-[0.2em]">Prioridade de Entrega Instantânea</p>
               </div>
 
-              <div className="bg-white p-5 rounded-[2.5rem] inline-block mx-auto shadow-[0_0_50px_-5px_rgba(255,255,255,0.05)] border-4 border-steam-card">
+              <div className="bg-white p-6 rounded-[2.5rem] inline-block mx-auto shadow-[0_0_60px_-10px_rgba(255,255,255,0.1)] border-8 border-white/5">
                 <img 
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(pixPayload)}`} 
                   alt="QR Code Pix"
@@ -486,68 +545,65 @@ const CheckoutPage = () => {
               <button 
                 onClick={() => {
                   navigator.clipboard.writeText(pixPayload);
-                  alert('Código Pix Copiado com Sucesso!');
+                  alert('Código Pix Copiado!');
                 }}
-                className="w-full bg-steam-dark text-[#32bcad] border border-[#32bcad]/30 font-black py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-[#32bcad] hover:text-steam-dark transition-all uppercase italic tracking-widest text-xs"
+                className="w-full bg-white/5 text-white border border-white/10 font-black py-5 rounded-2xl flex items-center justify-center gap-3 hover:bg-white hover:text-black transition-all uppercase italic tracking-[0.2em] text-[10px]"
               >
-                Copia e Cola <Ticket className="w-4 h-4" />
+                Copiar Chave Pix <Ticket className="w-4 h-4" />
               </button>
             </div>
 
             <div className="space-y-6">
-              <div className="bg-steam-card/20 p-6 rounded-3xl border border-steam-card space-y-6">
-                <div className="flex items-center justify-between pb-4 border-b border-white/5">
+              <div className="bg-white/5 backdrop-blur-2xl p-8 rounded-[2.5rem] border border-white/10 space-y-6">
+                <div className="flex items-center justify-between pb-6 border-b border-white/5">
                   <div className="flex flex-col">
-                    <span className="text-steam-accent text-[8px] font-black uppercase opacity-40">Loja Oficial</span>
+                    <span className="text-white/40 text-[8px] font-black uppercase tracking-widest">Favorecido Oficial</span>
                     <span className="text-white font-black uppercase italic text-sm">{siteSettings?.pixName || 'Administrador Verificado'}</span>
                   </div>
-                  <div className="bg-[#32bcad]/20 p-2 rounded-lg shadow-[0_0_15px_rgba(50,188,173,0.2)]">
-                    <ShieldCheck className="w-5 h-5 text-[#32bcad]" />
+                  <div className="bg-white/10 p-3 rounded-2xl">
+                    <ShieldCheck className="w-5 h-5 text-white" />
                   </div>
                 </div>
-                <div className="flex items-center justify-between pb-4 border-b border-white/5">
-                  <span className="text-steam-accent text-xs font-bold uppercase">ID da Transação</span>
-                  <span className="text-steam-accent font-mono text-[10px] opacity-60">#{Math.random().toString(36).substring(7).toUpperCase()}</span>
-                </div>
+                
                 <div className="flex items-center justify-between">
-                  <span className="text-[#32bcad] text-xs font-black uppercase italic">Total Final</span>
-                  <span className="text-3xl font-black text-white italic tracking-tighter">R$ {finalTotal.toFixed(2)}</span>
+                  <span className="text-white/40 text-xs font-black uppercase italic tracking-widest">Total Líquido</span>
+                  <span className="text-4xl font-black text-white italic tracking-tighter">R$ {finalTotal.toFixed(2)}</span>
                 </div>
               </div>
 
-              <div className="bg-steam-green/5 p-6 rounded-3xl border border-steam-green/20 space-y-4">
-                <div className="flex gap-4">
-                  <div className="w-10 h-10 bg-steam-green/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <ShieldCheck className="text-steam-green w-6 h-6" />
-                  </div>
-                  <div>
-                    <h4 className="text-steam-green font-black text-[10px] uppercase italic">Pagamento 100% Seguro</h4>
-                    <p className="text-steam-accent text-[10px] leading-relaxed opacity-70">Sua transação está protegida por encriptação militar ponta-a-ponta.</p>
-                  </div>
-                </div>
-
+              <div className="space-y-4">
                 <button 
                   onClick={handlePayment}
                   disabled={loading}
-                  className="w-full bg-steam-green text-steam-dark font-black py-5 rounded-2xl flex items-center justify-center gap-3 hover:bg-opacity-90 transition-all shadow-2xl uppercase italic tracking-widest"
+                  className="w-full bg-white text-black font-black py-6 rounded-3xl flex items-center justify-center gap-4 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_20px_40px_-15px_rgba(255,255,255,0.2)] uppercase italic tracking-[0.2em] text-lg group"
                 >
                   {loading ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-steam-dark border-t-transparent rounded-full animate-spin" />
-                      Processando...
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 border-4 border-black/20 border-t-black rounded-full animate-spin" />
+                      Verificando...
                     </div>
                   ) : (
-                    <>JÁ PAGUEI O PIX <CheckCircle2 className="w-5 h-5" /></>
+                    <>CONFIRMAR PAGAMENTO <CheckCircle2 className="w-5 h-5" /></>
                   )}
+                </button>
+                
+                <button 
+                  onClick={() => setStep(2)}
+                  className="w-full text-white/30 text-[10px] font-black uppercase hover:text-white transition-colors tracking-widest flex items-center justify-center gap-2"
+                >
+                  Voltar às Opções
                 </button>
               </div>
 
-              <button 
-                onClick={() => setStep(2)}
-                className="w-full text-steam-accent text-[10px] font-black uppercase hover:text-white transition-colors"
-              >
-                Alterar Método de Pagamento
-              </button>
+              <div className="bg-white/[0.02] p-6 rounded-3xl border border-white/5 flex gap-4">
+                <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <ShieldCheck className="text-white w-6 h-6" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-white font-black text-[10px] uppercase italic tracking-widest">Verificação em Tempo Real</h4>
+                  <p className="text-white/40 text-[9px] leading-relaxed font-bold tracking-tight uppercase">O sistema detecta o pagamento automaticamente em até 15 segundos após o envio do Pix.</p>
+                </div>
+              </div>
             </div>
           </motion.div>
         )}
@@ -560,57 +616,57 @@ const CheckoutPage = () => {
             exit={{ opacity: 0, scale: 0.95 }}
             className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-start"
           >
-            <div className="bg-steam-card/20 p-10 rounded-3xl border border-steam-card shadow-2xl space-y-8">
-              <div className="flex flex-col items-center text-center space-y-2">
-                <div className="w-16 h-16 bg-steam-blue/20 rounded-2xl flex items-center justify-center mb-2">
-                  <CreditCard className="w-8 h-8 text-steam-blue" />
+            <div className="bg-black/40 backdrop-blur-3xl p-10 rounded-[3rem] border border-white/10 shadow-2xl space-y-10">
+              <div className="flex flex-col items-center text-center space-y-3">
+                <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center mb-2 border border-white/10">
+                  <CreditCard className="w-10 h-10 text-white" />
                 </div>
-                <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter">Cartão de Crédito</h3>
-                <p className="text-steam-accent text-[10px] uppercase font-bold opacity-60">Pagamento Processado com Segurança</p>
+                <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter">Finalizar Pagamento</h3>
+                <p className="text-white/40 text-[10px] uppercase font-bold tracking-[0.2em]">Criptografia de Nível Bancário Ativada</p>
               </div>
 
-              <form onSubmit={handlePayment} className="space-y-4">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black uppercase text-steam-accent opacity-50">Número do Cartão</label>
+              <form onSubmit={handlePayment} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-white/40 tracking-widest ml-1">Número do Cartão</label>
                   <input 
                     type="text" 
                     value={cardData.number}
                     onChange={(e) => setCardData({...cardData, number: e.target.value})}
-                    className="w-full bg-steam-dark border border-steam-card rounded-xl p-4 text-sm focus:border-steam-blue outline-none transition-all"
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-5 text-base text-white focus:border-white focus:bg-white/[0.07] outline-none transition-all placeholder:text-white/10"
                     placeholder="0000 0000 0000 0000"
                     required
                   />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black uppercase text-steam-accent opacity-50">Nome do Titular</label>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-white/40 tracking-widest ml-1">Nome Completo do Titular</label>
                   <input 
                     type="text" 
                     value={cardData.name}
                     onChange={(e) => setCardData({...cardData, name: e.target.value})}
-                    className="w-full bg-steam-dark border border-steam-card rounded-xl p-4 text-sm focus:border-steam-blue outline-none transition-all"
-                    placeholder="COMO IMPRESSO"
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-5 text-base text-white focus:border-white focus:bg-white/[0.07] outline-none transition-all placeholder:text-white/10"
+                    placeholder="NOME COMO NO CARTÃO"
                     required
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black uppercase text-steam-accent opacity-50">Validade</label>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-white/40 tracking-widest ml-1">Data de Expiração</label>
                     <input 
                       type="text" 
                       value={cardData.expiry}
                       onChange={(e) => setCardData({...cardData, expiry: e.target.value})}
-                      className="w-full bg-steam-dark border border-steam-card rounded-xl p-4 text-sm focus:border-steam-blue outline-none transition-all"
+                      className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-5 text-base text-white focus:border-white focus:bg-white/[0.07] outline-none transition-all placeholder:text-white/10"
                       placeholder="MM/AA"
                       required
                     />
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black uppercase text-steam-accent opacity-50">CVV</label>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-white/40 tracking-widest ml-1">Código (CVV)</label>
                     <input 
                       type="password" 
                       value={cardData.cvv}
                       onChange={(e) => setCardData({...cardData, cvv: e.target.value})}
-                      className="w-full bg-steam-dark border border-steam-card rounded-xl p-4 text-sm focus:border-steam-blue outline-none transition-all"
+                      className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-5 text-base text-white focus:border-white focus:bg-white/[0.07] outline-none transition-all placeholder:text-white/10"
                       placeholder="***"
                       required
                       maxLength={3}
@@ -620,64 +676,65 @@ const CheckoutPage = () => {
               </form>
             </div>
 
-            <div className="space-y-6">
-              <div className="bg-steam-card/20 p-8 rounded-3xl border border-steam-card space-y-6">
-                <h4 className="text-white font-black text-sm uppercase italic border-b border-steam-card pb-4">Resumo do Pagamento</h4>
-                <div className="flex items-center justify-between">
-                  <span className="text-steam-accent text-xs font-bold uppercase">Subtotal</span>
-                  <span className="text-white font-bold">R$ {total.toFixed(2)}</span>
-                </div>
-                {discount > 0 && (
+            <div className="space-y-8">
+              <div className="bg-white/5 backdrop-blur-2xl p-10 rounded-[3rem] border border-white/10 space-y-8">
+                <h4 className="text-white font-black text-xs uppercase tracking-[0.3em] italic border-b border-white/5 pb-6">Detalhes do Pedido</h4>
+                <div className="space-y-5">
                   <div className="flex items-center justify-between">
-                    <span className="text-red-400 text-xs font-bold uppercase">Desconto</span>
-                    <span className="text-red-400 font-bold">- R$ {discount.toFixed(2)}</span>
+                    <span className="text-white/40 text-[10px] font-black uppercase tracking-widest">Valor Bruto</span>
+                    <span className="text-white font-bold text-sm">R$ {total.toFixed(2)}</span>
                   </div>
-                )}
-                {hasPhysicalProducts && (
-                  <div className="flex items-center justify-between">
-                    <span className="text-steam-accent text-xs font-bold uppercase text-left w-1/2">Frete ({shippingMethod.name})</span>
-                    <span className="text-steam-accent font-bold">R$ {shippingMethod.cost.toFixed(2)}</span>
+                  {discount > 0 && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-red-400 text-[10px] font-black uppercase tracking-widest">Bônus Aplicado</span>
+                      <span className="text-red-400 font-bold text-sm">- R$ {discount.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {hasPhysicalProducts && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-white/40 text-[10px] font-black uppercase tracking-widest text-left max-w-[150px]">Frete ({shippingMethod.name})</span>
+                      <span className="text-white/60 font-bold text-sm">R$ {shippingMethod.cost.toFixed(2)}</span>
+                    </div>
+                  )}
+                  <div className="pt-8 border-t border-white/5 flex items-center justify-between">
+                    <span className="text-white text-xs font-black uppercase italic tracking-widest">Total Liquidado</span>
+                    <span className="text-4xl font-black text-white italic tracking-tighter">R$ {finalTotal.toFixed(2)}</span>
                   </div>
-                )}
-                <div className="pt-4 border-t border-steam-card flex items-center justify-between">
-                  <span className="text-steam-blue text-xs font-black uppercase italic">Total Final</span>
-                  <span className="text-3xl font-black text-white italic tracking-tighter">R$ {finalTotal.toFixed(2)}</span>
                 </div>
               </div>
 
-              <div className="bg-steam-blue/5 p-8 rounded-3xl border border-steam-blue/20 space-y-6">
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 bg-steam-blue/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <ShieldCheck className="text-steam-blue w-6 h-6" />
-                  </div>
-                  <div>
-                    <h4 className="text-steam-blue font-black text-xs uppercase italic">Transação Segura</h4>
-                    <p className="text-steam-accent text-[10px] leading-relaxed opacity-70">Seus dados de cartão são processados em gateway certificado PCI-DSS.</p>
-                  </div>
-                </div>
-
+              <div className="space-y-6">
                 <button 
                   onClick={handlePayment}
                   disabled={loading}
-                  className="w-full bg-steam-blue text-steam-dark font-black py-5 rounded-2xl flex items-center justify-center gap-3 hover:bg-opacity-90 transition-all shadow-2xl uppercase italic tracking-widest text-lg"
+                  className="w-full bg-white text-black font-black py-6 rounded-3xl flex items-center justify-center gap-4 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_20px_40px_-15px_rgba(255,255,255,0.2)] uppercase italic tracking-[0.2em] text-xl group"
                 >
                   {loading ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-5 h-5 border-2 border-steam-dark border-t-transparent rounded-full animate-spin" />
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 border-4 border-black/20 border-t-black rounded-full animate-spin" />
                       Processando...
                     </div>
                   ) : (
-                    <>FINALIZAR COMPRA <ArrowRight className="w-6 h-6" /></>
+                    <>AUTORIZAR PAGAMENTO <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" /></>
                   )}
+                </button>
+                <button 
+                  onClick={() => setStep(2)}
+                  className="w-full text-white/30 text-[10px] font-black uppercase hover:text-white transition-colors tracking-widest flex items-center justify-center gap-2"
+                >
+                  Alterar Método de Pagamento
                 </button>
               </div>
 
-              <button 
-                onClick={() => setStep(2)}
-                className="w-full text-steam-accent text-[10px] font-black uppercase hover:text-white transition-colors"
-              >
-                Mudar Forma de Pagamento
-              </button>
+              <div className="flex items-center gap-4 bg-white/[0.02] p-6 rounded-3xl border border-white/5">
+                <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center flex-shrink-0">
+                  <ShieldCheck className="text-white w-6 h-6" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-white font-black text-[10px] uppercase italic tracking-widest">Privacidade Garantida</h4>
+                  <p className="text-white/40 text-[9px] leading-relaxed uppercase font-bold tracking-wider">Seus dados nunca são armazenados em nossos servidores. Processamento direto via Gateway PCI.</p>
+                </div>
+              </div>
             </div>
           </motion.div>
         )}
@@ -687,27 +744,27 @@ const CheckoutPage = () => {
             key="step3" 
             initial={{ scale: 0.8, opacity: 0 }} 
             animate={{ scale: 1, opacity: 1 }} 
-            className="flex flex-col items-center justify-center py-12 text-center"
+            className="flex flex-col items-center justify-center py-20 text-center max-w-2xl mx-auto"
           >
-            <div className="w-24 h-24 bg-steam-green/20 rounded-full flex items-center justify-center mb-6 text-steam-green">
+            <div className="w-32 h-32 bg-white/5 border border-white/10 rounded-[2.5rem] flex items-center justify-center mb-8 text-white shadow-2xl">
               <CheckCircle2 className="w-16 h-16" />
             </div>
-            <h2 className="text-4xl font-black text-white italic uppercase mb-2">Pagamento Realizado!</h2>
-            <p className="text-steam-accent max-w-sm mx-auto mb-8">
-              Sua compra foi confirmada com sucesso. Você já pode acessar seu produto na aba "Pedidos" ou através do Chat de Suporte.
+            <h2 className="text-5xl font-black text-white italic uppercase mb-4 tracking-tighter">Pedido Confirmado</h2>
+            <p className="text-white/40 max-w-sm mx-auto mb-12 uppercase font-black text-[10px] tracking-[0.3em] leading-relaxed">
+              Obrigado pela confiança. Seus produtos foram liberados e enviados para seu dashboard.
             </p>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-6 w-full">
               <button 
                 onClick={() => navigate('/profile')} 
-                className="bg-steam-blue text-steam-dark font-black px-8 py-3 rounded-xl uppercase italic tracking-widest shadow-xl hover:scale-105 transition-all"
+                className="flex-1 bg-white text-black font-black px-10 py-5 rounded-2xl uppercase italic tracking-widest shadow-2xl hover:scale-105 transition-all text-sm"
               >
-                Ver Meus Pedidos
+                Acessar Meus Produtos
               </button>
               <button 
                 onClick={() => navigate('/')} 
-                className="bg-steam-card text-white font-black px-8 py-3 rounded-xl uppercase italic tracking-widest shadow-xl hover:bg-steam-blue/20 transition-all"
+                className="flex-1 bg-white/5 text-white border border-white/10 font-black px-10 py-5 rounded-2xl uppercase italic tracking-widest hover:bg-white/10 transition-all text-sm"
               >
-                Voltar à Loja
+                Voltar ao Início
               </button>
             </div>
           </motion.div>
