@@ -95,7 +95,7 @@ const ProductDetail = () => {
       <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-steam-blue"></div>
     </div>
   );
-  if (!product) return <div className="h-96 flex items-center justify-center text-red-500 font-bold uppercase">Produto não encontrado.</div>;
+  if (!product) return <div className="h-96 flex items-center justify-center text-red-500 font-bold uppercase">Producto no encontrado.</div>;
 
   const discount = product.originalPrice && product.originalPrice > product.price 
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
@@ -103,7 +103,7 @@ const ProductDetail = () => {
   return (
     <div className="max-w-6xl mx-auto space-y-6 md:space-y-8 animate-in fade-in duration-700 px-2 sm:px-0">
       <div className="flex items-center gap-2 text-[10px] uppercase font-black tracking-widest text-steam-accent opacity-50 mb-2 md:mb-4">
-        <span className="hover:text-steam-blue cursor-pointer" onClick={() => navigate('/')}>Início</span>
+        <span className="hover:text-steam-blue cursor-pointer" onClick={() => navigate('/')}>Inicio</span>
         <ChevronRight className="w-3 h-3" />
         <span className="text-steam-blue">{product.category}</span>
       </div>
@@ -124,7 +124,7 @@ const ProductDetail = () => {
             )}
             <div className="absolute bottom-4 left-4 md:bottom-6 md:left-6 flex gap-2">
               <span className="bg-steam-dark/80 backdrop-blur px-2 py-1 md:px-3 md:py-1.5 rounded-lg border border-steam-card text-[8px] md:text-[10px] font-black text-steam-blue uppercase tracking-widest">
-                {product.badgeType || 'PRODUTO'}
+                {product.badgeType || 'PRODUCTO'}
               </span>
             </div>
           </div>
@@ -138,33 +138,33 @@ const ProductDetail = () => {
                     <Star key={i} className={`w-3 h-3 md:w-4 md:h-4 ${i < Math.round(reviews.reduce((a, b) => a + b.rating, 0) / (reviews.length || 1)) ? 'fill-current' : 'opacity-20'}`} />
                   ))}
                 </div>
-                <span className="text-steam-accent">({reviews.length} avaliações)</span>
+                <span className="text-steam-accent">({reviews.length} valoraciones)</span>
               </div>
             </div>
             
             <div className="prose prose-invert max-w-none">
-              <p className="text-steam-accent leading-relaxed text-sm md:text-lg whitespace-pre-wrap">{product.description || 'Nenhuma descrição detalhada fornecida para este item.'}</p>
+              <p className="text-steam-accent leading-relaxed text-sm md:text-lg whitespace-pre-wrap">{product.description || 'No hay descripción detallada para este artículo.'}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
-            <FeatureCard icon={<ShieldCheck className="text-steam-green" />} title="Venda Protegida" desc="Garantia total da plataforma" />
+            <FeatureCard icon={<ShieldCheck className="text-steam-green" />} title="Venta Protegida" desc="Garantía total de la plataforma" />
             <FeatureCard 
               icon={product.isPhysical ? <Truck className="text-yellow-400" /> : <Zap className="text-yellow-400" />} 
               title={product.isPhysical ? "Entrega Logística" : "Entrega Automática"} 
-              desc={product.isPhysical ? "Rastreado por transportadora" : "Receba instantaneamente"} 
+              desc={product.isPhysical ? "Rastreado por transportadora" : "Recibe instantáneamente"} 
             />
-            <FeatureCard icon={<Globe className="text-steam-blue" />} title="Suporte 24/7" desc="Atendimento prioritário" />
+            <FeatureCard icon={<Globe className="text-steam-blue" />} title="Soporte 24/7" desc="Atención prioritaria" />
           </div>
 
           <div className="bg-steam-card/20 p-6 md:p-10 rounded-2xl md:rounded-3xl border border-steam-card shadow-lg space-y-6 md:space-y-8">
              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <h3 className="text-xl md:text-2xl font-black text-white uppercase italic flex items-center gap-3">
-                  <Star className="w-5 h-5 md:w-6 md:h-6 text-yellow-500 fill-current" /> Avaliações Reais
+                  <Star className="w-5 h-5 md:w-6 md:h-6 text-yellow-500 fill-current" /> Valoraciones Reales
                 </h3>
                 {hasPurchased && (
                   <span className="text-[8px] md:text-[10px] font-black text-steam-blue bg-steam-blue/10 px-3 py-1.5 md:px-4 md:py-2 rounded-full uppercase tracking-widest">
-                    Deixe sua opinião abaixo
+                    Deja tu opinión abajo
                   </span>
                 )}
              </div>
@@ -172,7 +172,7 @@ const ProductDetail = () => {
              {hasPurchased && (
                <form onSubmit={submitReview} className="bg-steam-dark/50 p-4 md:p-6 rounded-xl md:rounded-2xl border border-steam-card shadow-inner space-y-4">
                  <div className="flex items-center justify-between">
-                   <h4 className="text-[10px] md:text-xs font-black text-white uppercase opacity-70">Avaliar Produto</h4>
+                   <h4 className="text-[10px] md:text-xs font-black text-white uppercase opacity-70">Valorar Producto</h4>
                    <div className="flex gap-1">
                      {[1,2,3,4,5].map(s => (
                        <button key={s} type="button" onClick={() => setRating(s)} className={`transition-all hover:scale-110 ${rating >= s ? 'text-yellow-500' : 'text-steam-accent opacity-20'}`}>
@@ -185,12 +185,12 @@ const ProductDetail = () => {
                    value={reviewText}
                    onChange={e => setReviewText(e.target.value)}
                    className="w-full bg-steam-dark border border-steam-card rounded-xl p-3 md:p-4 text-xs md:text-sm text-white focus:border-steam-blue outline-none h-24 md:h-32 transition-all"
-                   placeholder="Conte sua experiência com o produto..."
+                   placeholder="Cuéntanos tu experiencia con el producto..."
                    required
                  />
                  <div className="flex justify-end">
                    <button disabled={submittingReview} className="bg-steam-blue text-steam-dark font-black px-6 py-2 md:px-10 md:py-3 rounded-xl flex items-center gap-2 md:gap-3 hover:scale-105 transition-all shadow-xl uppercase italic tracking-widest text-[10px] md:text-sm">
-                     {submittingReview ? 'Publicando...' : <><Send className="w-4 h-4" /> Publicar Avaliação</>}
+                     {submittingReview ? 'Publicando...' : <><Send className="w-4 h-4" /> Publicar Valoración</>}
                    </button>
                  </div>
                </form>
@@ -202,7 +202,7 @@ const ProductDetail = () => {
                 )) : (
                   <div className="flex flex-col items-center justify-center py-10 md:py-20 text-steam-accent/40 bg-steam-dark/20 rounded-2xl md:rounded-3xl border border-dashed border-steam-card">
                     <Star className="w-10 h-10 md:w-12 md:h-12 mb-4 opacity-20" />
-                    <p className="font-black uppercase italic tracking-widest text-xs md:text-sm">Nenhuma avaliação ainda</p>
+                    <p className="font-black uppercase italic tracking-widest text-xs md:text-sm">Aún no hay valoraciones</p>
                   </div>
                 )}
              </div>
@@ -216,17 +216,17 @@ const ProductDetail = () => {
                 <div className="h-1 flex-1 bg-steam-blue/20 rounded-full overflow-hidden">
                   <div className="h-full bg-steam-blue w-2/3" />
                 </div>
-                <span className="text-[8px] md:text-[10px] font-black text-steam-blue uppercase italic">Oferta Ativa</span>
+                <span className="text-[8px] md:text-[10px] font-black text-steam-blue uppercase italic">Oferta Activa</span>
               </div>
               
               <div className="flex flex-col">
                 {product.originalPrice > product.price && (
-                  <span className="text-steam-accent line-through text-base md:text-lg font-bold">R$ {product.originalPrice.toFixed(2)}</span>
+                  <span className="text-steam-accent line-through text-base md:text-lg font-bold">$ {product.originalPrice.toFixed(2)}</span>
                 )}
                 <div className="flex items-baseline gap-1 md:gap-2">
-                  <span className="text-[10px] md:text-xs font-black text-steam-blue uppercase">R$</span>
+                  <span className="text-[10px] md:text-xs font-black text-steam-blue uppercase">$</span>
                   <span className="text-4xl md:text-6xl font-black text-white italic tracking-tighter">{product.price.toFixed(2).split('.')[0]}</span>
-                  <span className="text-xl md:text-2xl font-black text-white italic tracking-tighter opacity-80">,{product.price.toFixed(2).split('.')[1]}</span>
+                  <span className="text-xl md:text-2xl font-black text-white italic tracking-tighter opacity-80">{product.price.toFixed(2).split('.')[1]}</span>
                 </div>
               </div>
             </div>
@@ -236,13 +236,13 @@ const ProductDetail = () => {
                 onClick={() => { handleAddToCart(); navigate('/checkout'); }}
                 className="w-full bg-steam-blue text-steam-dark font-black py-4 md:py-5 rounded-xl md:rounded-2xl flex items-center justify-center gap-3 transition-all hover:scale-105 shadow-xl uppercase italic tracking-widest text-sm md:text-base"
               >
-                <Zap className="w-5 h-5 md:w-6 md:h-6 fill-current" /> Compre Agora
+                <Zap className="w-5 h-5 md:w-6 md:h-6 fill-current" /> Comprar Ahora
               </button>
               <button 
                 onClick={handleAddToCart}
                 className="w-full bg-steam-bg/50 text-white font-black py-3 md:py-4 rounded-xl md:rounded-2xl flex items-center justify-center gap-2 md:gap-3 border border-steam-card hover:bg-steam-card/40 transition-all uppercase italic tracking-widest text-xs md:text-sm"
               >
-                <ShoppingCart className="w-4 h-4 md:w-5 md:h-5" /> Adicionar Carrinho
+                <ShoppingCart className="w-4 h-4 md:w-5 md:h-5" /> Añadir al Carrito
               </button>
             </div>
 
@@ -250,7 +250,7 @@ const ProductDetail = () => {
             <div className="bg-steam-card/20 rounded-2xl border border-steam-card p-6 space-y-6">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-black text-white uppercase italic flex items-center gap-2">
-                  <Award className="w-4 h-4 text-steam-blue" /> Informações do Vendedor
+                  <Award className="w-4 h-4 text-steam-blue" /> Info del Vendedor
                 </h3>
                 <span className="text-[10px] bg-steam-green/20 text-steam-green px-2 py-0.5 rounded font-black uppercase">Verificado</span>
               </div>
@@ -263,25 +263,25 @@ const ProductDetail = () => {
                 />
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-lg font-black text-white uppercase italic tracking-wider">{product.sellerName || 'GameMarket Store'}</span>
+                    <span className="text-lg font-black text-white uppercase italic tracking-wider">{product.sellerName || 'Steam offline Store'}</span>
                     <Verified className="w-4 h-4 text-steam-blue" />
                   </div>
                   <div className="flex items-center gap-1 mt-1">
                     {[...Array(5)].map((_, i) => (
                       <Star key={i} className={`w-3 h-3 ${i < (product.sellerRating || 5) ? 'text-yellow-400 fill-current' : 'text-steam-accent'}`} />
                     ))}
-                    <span className="text-[10px] text-steam-accent font-bold ml-1">({product.sellerSales || 150}+ Vendas)</span>
+                    <span className="text-[10px] text-steam-accent font-bold ml-1">({product.sellerSales || 150}+ Ventas)</span>
                   </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-steam-dark/50 p-3 rounded-xl border border-steam-card text-center">
-                  <div className="text-[10px] text-steam-accent uppercase font-black mb-1">Reputação</div>
+                  <div className="text-[10px] text-steam-accent uppercase font-black mb-1">Reputación</div>
                   <div className="text-steam-green font-black text-xs uppercase italic">Excelente</div>
                 </div>
                 <div className="bg-steam-dark/50 p-3 rounded-xl border border-steam-card text-center">
-                  <div className="text-[10px] text-steam-accent uppercase font-black mb-1">Resposta</div>
+                  <div className="text-[10px] text-steam-accent uppercase font-black mb-1">Respuesta</div>
                   <div className="text-steam-blue font-black text-xs uppercase italic">&lt; 15 min</div>
                 </div>
               </div>
@@ -295,14 +295,14 @@ const ProductDetail = () => {
             </div>
 
             <div className="space-y-4 bg-steam-dark/50 p-6 rounded-2xl border border-steam-card">
-              <InfoItem label="Vendedor" value="GameMarket" />
+              <InfoItem label="Vendedor" value="Steam offline" />
               <InfoItem 
                 label="Entrega" 
-                value={product.isPhysical ? "Via Transportadora" : "Automática"} 
+                value={product.isPhysical ? "Vía Transportadora" : "Automática"} 
                 color={product.isPhysical ? "text-steam-blue" : "text-yellow-400"} 
               />
-              <InfoItem label="Tipo" value={product.isPhysical ? "Produto Físico" : "Digital"} />
-              <InfoItem label="Estoque" value={`${product.stock} un.`} color="text-steam-green" />
+              <InfoItem label="Tipo" value={product.isPhysical ? "Producto Físico" : "Digital"} />
+              <InfoItem label="Stock" value={`${product.stock} un.`} color="text-steam-green" />
             </div>
 
             <div className="flex items-center justify-center gap-4 py-2 opacity-50">

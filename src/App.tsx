@@ -15,6 +15,7 @@ import Profile from './pages/Profile';
 import SellerProfile from './pages/SellerProfile';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/Checkout';
+import CategoryView from './pages/CategoryView';
 import Navbar from './components/Navbar';
 import Chat from './components/Chat';
 
@@ -30,6 +31,7 @@ export default function App() {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/product/:id" element={<ProductDetail />} />
+                  <Route path="/category/:categoryId" element={<CategoryView />} />
                   <Route path="/admin/*" element={<AdminDashboard />} />
                   <Route path="/login" element={<AuthPage />} />
                   <Route path="/profile" element={<Profile />} />

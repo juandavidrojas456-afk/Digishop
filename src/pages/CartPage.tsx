@@ -28,13 +28,13 @@ const CartPage = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
         <CheckCircle2 className="w-20 h-20 text-steam-green" />
-        <h1 className="text-3xl font-bold text-white uppercase italic">Order Confirmed!</h1>
-        <p className="text-steam-accent max-w-md">Thank you for your purchase. Your digital keys have been delivered to your profile.</p>
+        <h1 className="text-3xl font-bold text-white uppercase italic">¡Pedido Confirmado!</h1>
+        <p className="text-steam-accent max-w-md">Gracias por su compra. Sus llaves digitales han sido enviadas a su perfil.</p>
         <button
           onClick={() => navigate('/profile')}
           className="bg-steam-blue text-steam-dark font-bold px-8 py-3 rounded hover:bg-opacity-80 transition-all"
         >
-          View My Keys
+          Ver Mis Llaves
         </button>
       </div>
     );
@@ -44,13 +44,13 @@ const CartPage = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
         <ShoppingBag className="w-16 h-16 text-steam-card" />
-        <h1 className="text-2xl font-bold text-white uppercase italic">Your Cart is Empty</h1>
-        <p className="text-steam-accent">Looks like you haven't added any games yet.</p>
+        <h1 className="text-2xl font-bold text-white uppercase italic">Tu Carrito está Vacío</h1>
+        <p className="text-steam-accent">Parece que aún no has añadido ningún juego.</p>
         <button
           onClick={() => navigate('/')}
           className="bg-steam-blue text-steam-dark font-bold px-8 py-3 rounded hover:bg-opacity-80 transition-all"
         >
-          Browse Marketplace
+          Explorar Tienda
         </button>
       </div>
     );
@@ -61,7 +61,7 @@ const CartPage = () => {
       <div className="lg:col-span-2 space-y-4 md:space-y-6">
         <h1 className="text-xl md:text-2xl font-bold text-white uppercase italic flex items-center gap-3">
           <ShoppingBag className="w-5 h-5 md:w-6 md:h-6 text-steam-blue" />
-          Shopping Cart ({items.length})
+          Carrito de Compras ({items.length})
         </h1>
 
         <div className="space-y-3">
@@ -70,7 +70,7 @@ const CartPage = () => {
               <img src={item.image} alt={item.name} className="w-16 h-16 md:w-20 md:h-20 object-cover rounded shadow-lg" referrerPolicy="no-referrer" />
               <div className="flex-1 min-w-0">
                 <h3 className="font-bold text-white text-sm md:text-base truncate">{item.name}</h3>
-                <p className="text-steam-green font-bold text-xs md:text-sm">R$ {item.price.toFixed(2)}</p>
+                <p className="text-steam-green font-bold text-xs md:text-sm">$ {item.price.toFixed(2)}</p>
               </div>
               
               <div className="flex items-center gap-2 md:gap-3 bg-steam-bg border border-steam-card px-2 py-0.5 md:px-3 md:py-1 rounded-lg scale-90 md:scale-100">
@@ -90,7 +90,7 @@ const CartPage = () => {
               </div>
 
               <div className="text-right min-w-[60px] md:min-w-[80px] hidden sm:block">
-                <p className="text-white font-black text-sm italic">R$ {(item.price * item.quantity).toFixed(2)}</p>
+                <p className="text-white font-black text-sm italic">$ {(item.price * item.quantity).toFixed(2)}</p>
               </div>
 
               <button
@@ -106,29 +106,29 @@ const CartPage = () => {
 
       <div className="space-y-6">
         <div className="bg-steam-card p-6 rounded-xl border border-steam-blue/20 space-y-6 lg:sticky lg:top-24">
-          <h2 className="text-lg font-bold text-white uppercase italic">Summary</h2>
+          <h2 className="text-lg font-bold text-white uppercase italic">Resumen</h2>
           
           <div className="space-y-2 text-sm">
             <div className="flex justify-between text-steam-accent">
               <span>Subtotal</span>
-              <span>R$ {total.toFixed(2)}</span>
+              <span>$ {total.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-steam-accent">
-              <span>Taxas</span>
-              <span className="text-steam-green">GRÁTIS</span>
+              <span>Tasas</span>
+              <span className="text-steam-green">GRATIS</span>
             </div>
             <div className="pt-2 border-t border-steam-bg flex justify-between text-xl font-bold text-white">
               <span>Total</span>
-              <span className="text-steam-green">R$ {total.toFixed(2)}</span>
+              <span className="text-steam-green">$ {total.toFixed(2)}</span>
             </div>
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-xs font-bold uppercase text-steam-accent tracking-widest">Payment Method</h3>
+            <h3 className="text-xs font-bold uppercase text-steam-accent tracking-widest">Método de Pago</h3>
             <div className="grid grid-cols-2 gap-2">
               <PaymentChoice id="pix" label="Pix" active={paymentMethod === 'pix'} onClick={() => setPaymentMethod('pix')} />
               <PaymentChoice id="nequi" label="Nequi" active={paymentMethod === 'nequi'} onClick={() => setPaymentMethod('nequi')} />
-              <PaymentChoice id="card" label="Card" active={paymentMethod === 'card'} onClick={() => setPaymentMethod('card')} />
+              <PaymentChoice id="card" label="Tarjeta" active={paymentMethod === 'card'} onClick={() => setPaymentMethod('card')} />
               <PaymentChoice id="crypto" label="Crypto" active={paymentMethod === 'crypto'} onClick={() => setPaymentMethod('crypto')} />
             </div>
           </div>
@@ -139,10 +139,10 @@ const CartPage = () => {
             className="w-full bg-steam-blue hover:bg-opacity-80 text-steam-dark font-bold py-4 rounded flex items-center justify-center gap-2 transition-all transform active:scale-95"
           >
             {isProcessing ? (
-              'Processing...'
+              'Procesando...'
             ) : (
               <>
-                Checkout <ChevronRight className="w-5 h-5" />
+                Finalizar Compra <ChevronRight className="w-5 h-5" />
               </>
             )}
           </button>

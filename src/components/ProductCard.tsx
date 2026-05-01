@@ -47,63 +47,63 @@ const ProductCard = ({ product }: { product: Product }) => {
   return (
     <Link 
       to={`/product/${product.id}`}
-      className="group bg-steam-card/20 border border-steam-card/30 rounded-2xl overflow-hidden hover:border-steam-green transition-all flex flex-col relative shadow-xl"
+      className="group bg-white/[0.03] border border-white/5 rounded-[2.5rem] overflow-hidden hover:border-white/10 transition-all flex flex-col relative shadow-2xl backdrop-blur-sm"
     >
-      <div className="aspect-video relative overflow-hidden">
+      <div className="aspect-video relative overflow-hidden bg-white/5">
         <img 
-          src={product.images?.[0] || `https://picsum.photos/seed/${product.id}/400/225`} 
+          src={product.images?.[0] || `https://picsum.photos/seed/${product.id}/600/338`} 
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
           referrerPolicy="no-referrer"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
         
         {/* Dynamic Discount Badge */}
         {discount > 0 && (
-          <div className="absolute top-3 left-3 bg-steam-green text-steam-dark text-[10px] font-black px-2 py-0.5 rounded shadow-xl uppercase italic">
+          <div className="absolute top-4 left-4 bg-white text-black text-[9px] font-black px-3 py-1 rounded-full shadow-2xl uppercase italic tracking-widest">
             -{discount}%
           </div>
         )}
 
-        {/* Product Type Badge (Bottom Right of Image) */}
+        {/* Product Type Badge */}
         {product.badgeType && (
-          <div className="absolute bottom-3 right-3 bg-steam-blue text-white text-[8px] font-black px-2 py-0.5 rounded shadow-lg uppercase tracking-widest italic">
+          <div className="absolute top-4 right-4 bg-black/40 backdrop-blur-xl text-white text-[8px] font-black px-3 py-1 rounded-full shadow-lg uppercase tracking-[0.2em] italic border border-white/10">
             {product.badgeType}
           </div>
         )}
       </div>
       
-      <div className="p-4 md:p-5 flex-1 flex flex-col gap-2 md:gap-3">
-        <h3 className="text-xs md:text-sm font-black text-white group-hover:text-steam-green transition-colors line-clamp-2 leading-tight uppercase italic tracking-tighter">
-          {product.name}
-        </h3>
-
-        <div className="flex items-center gap-1.5 grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
-          <Star className="w-2.5 h-2.5 md:w-3 md:h-3 text-yellow-500 fill-current" />
-          <span className="text-[8px] md:text-[10px] text-steam-accent font-bold uppercase tracking-tight">
-            {product.sellerName || 'Verified Store'}
-          </span>
+      <div className="p-6 flex-1 flex flex-col gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 opacity-40 group-hover:opacity-100 transition-opacity">
+            <div className="w-1.5 h-1.5 bg-steam-green rounded-full shadow-[0_0_8px_rgba(164,203,50,0.8)]" />
+            <span className="text-[9px] text-white font-black uppercase tracking-[0.2em]">
+              {product.sellerName || 'Verificado'}
+            </span>
+          </div>
+          <h3 className="text-lg font-black text-white group-hover:text-steam-blue transition-colors line-clamp-2 leading-tight uppercase italic tracking-tighter">
+            {product.name}
+          </h3>
         </div>
 
-        <div className="mt-auto pt-3 md:pt-4 border-t border-steam-card/40">
-          <div className="flex items-end justify-between">
-            <div className="flex flex-col">
-              {product.originalPrice && (
-                <span className="text-[8px] md:text-[10px] text-steam-accent/40 line-through leading-none mb-1">
-                  R$ {product.originalPrice.toFixed(2)}
-                </span>
-              )}
-              <span className="text-lg md:text-xl font-black text-steam-green italic leading-none tracking-tighter">
-                R$ {product.price.toFixed(2)}
+        <div className="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
+          <div className="flex flex-col">
+            {product.originalPrice && (
+              <span className="text-[10px] text-white/20 line-through leading-none mb-1 font-bold">
+                $ {product.originalPrice.toFixed(2)}
               </span>
-            </div>
-            
-            <button 
-              onClick={handleAddToCart}
-              className="bg-steam-green text-steam-dark p-2 md:p-3 rounded-lg md:rounded-xl transition-all transform active:scale-90 shadow-lg hover:shadow-steam-green/20"
-            >
-              <ShoppingCart className="w-4 h-4 md:w-5 md:h-5" />
-            </button>
+            )}
+            <span className="text-2xl font-black text-white italic leading-none tracking-tighter">
+              $ {product.price.toFixed(2)}
+            </span>
           </div>
+          
+          <button 
+            onClick={handleAddToCart}
+            className="bg-white text-black w-12 h-12 rounded-2xl flex items-center justify-center transition-all transform active:scale-90 shadow-2xl hover:scale-110"
+          >
+            <ShoppingCart className="w-5 h-5" />
+          </button>
         </div>
       </div>
     </Link>

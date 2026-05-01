@@ -58,7 +58,7 @@ const SellerProfile = () => {
     </div>
   );
 
-  if (!profile) return <div className="p-20 text-center text-red-500 font-bold uppercase italic">Perfil não encontrado.</div>;
+  if (!profile) return <div className="p-20 text-center text-red-500 font-bold uppercase italic">Perfil no encontrado.</div>;
 
   return (
     <div className="max-w-7xl mx-auto space-y-0 -mt-8 -mx-4 sm:-mx-8">
@@ -70,7 +70,7 @@ const SellerProfile = () => {
             onClick={() => navigate(-1)}
             className="bg-black/30 hover:bg-black/50 backdrop-blur px-4 py-2 rounded-lg text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all"
           >
-            <ChevronLeft className="w-4 h-4" /> Voltar
+            <ChevronLeft className="w-4 h-4" /> Volver
           </button>
         </div>
       </div>
@@ -107,38 +107,38 @@ const SellerProfile = () => {
                     <Star className="w-4 h-4 fill-current" />
                     <Star className="w-4 h-4 fill-current opacity-50" />
                   </div>
-                  <span className="text-[10px] font-black text-white/50 uppercase tracking-widest">4.9 (255 avaliações)</span>
+                  <span className="text-[10px] font-black text-white/50 uppercase tracking-widest">4.9 (255 valoraciones)</span>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <div className="text-pink-500 text-xs text-center font-bold">👋 Olá! Seja bem-vindo à {profile.displayName || 'nossa loja'}! 👋</div>
+                <div className="text-pink-500 text-xs text-center font-bold">👋 ¡Hola! ¡Bienvenido a {profile.displayName || 'nuestra tienda'}! 👋</div>
                 <p className="text-steam-accent text-sm text-center leading-relaxed">
-                   O enigma foi resolvido: como ter as melhores assinaturas gastando pouco? A resposta está aqui. ⚡️
+                   El enigma ha sido resuelto: ¿cómo tener las mejores suscripciones gastando poco? La respuesta está aquí. ⚡️
                 </p>
                 <div className="grid grid-cols-1 gap-2 text-[11px] text-steam-accent font-medium leading-relaxed bg-white/5 p-4 rounded-xl">
-                  <div>🎮 Keys de Jogos & Itens Raros</div>
-                  <div>💎 Assinaturas (Youtube e Spotify)</div>
+                  <div>🎮 Keys de Juegos & Ítems Raros</div>
+                  <div>💎 Suscripciones (Youtube y Spotify)</div>
                   <div>⚡️ Entrega Automática</div>
                 </div>
               </div>
 
               <div className="space-y-3 pt-4 border-t border-white/5">
-                <InfoItem icon={<Calendar className="w-4 h-4 text-[#7C3AED]" />} label="Membro desde" value={new Date(profile.createdAt?.seconds * 1000 || profile.createdAt).toLocaleDateString()} />
+                <InfoItem icon={<Calendar className="w-4 h-4 text-[#7C3AED]" />} label="Miembro desde" value={new Date(profile.createdAt?.seconds * 1000 || profile.createdAt).toLocaleDateString()} />
                 <div className="flex items-center gap-2 py-1">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                  <span className="text-[10px] text-green-500 font-black uppercase tracking-widest">Online Agora</span>
+                  <span className="text-[10px] text-green-500 font-black uppercase tracking-widest">En Línea Ahora</span>
                 </div>
               </div>
 
               <button className="w-full bg-white/5 border border-white/10 text-white/40 font-black py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-red-500/10 hover:text-red-500 transition-all uppercase tracking-widest text-[10px]">
-                <Flag className="w-4 h-4" /> Denunciar usuário
+                <Flag className="w-4 h-4" /> Denunciar usuario
               </button>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-               <StatCard icon={<CircleDollarSign className="w-6 h-6 text-green-400" />} label="Vendas Concluídas" value="853" />
-               <StatCard icon={<Star className="w-6 h-6 text-yellow-400" />} label="Avaliações" value="255" />
+               <StatCard icon={<CircleDollarSign className="w-6 h-6 text-green-400" />} label="Ventas Concluidas" value="853" />
+               <StatCard icon={<Star className="w-6 h-6 text-yellow-400" />} label="Valoraciones" value="255" />
             </div>
           </div>
 
@@ -149,13 +149,13 @@ const SellerProfile = () => {
                 onClick={() => setActiveTab('reviews')}
                 className={`px-8 py-3 rounded-xl text-xs font-black uppercase italic tracking-widest transition-all ${activeTab === 'reviews' ? 'bg-[#7C3AED] text-white shadow-lg' : 'text-white/40 hover:text-white/70'}`}
               >
-                Avaliações
+                Valoraciones
               </button>
               <button 
                 onClick={() => setActiveTab('products')}
                 className={`px-8 py-3 rounded-xl text-xs font-black uppercase italic tracking-widest transition-all ${activeTab === 'products' ? 'bg-[#7C3AED] text-white shadow-lg' : 'text-white/40 hover:text-white/70'}`}
               >
-                Produtos
+                Productos
               </button>
             </div>
 
@@ -175,7 +175,7 @@ const SellerProfile = () => {
                         <div className="flex text-yellow-500 justify-center md:justify-start">
                           {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 fill-current" />)}
                         </div>
-                        <p className="text-[10px] font-black text-white/30 uppercase tracking-widest">Baseado em 255 avaliações</p>
+                        <p className="text-[10px] font-black text-white/30 uppercase tracking-widest">Basado en 255 valoraciones</p>
                       </div>
 
                       <div className="flex-1 space-y-2 w-full">
@@ -199,7 +199,7 @@ const SellerProfile = () => {
 
                     <div className="space-y-4">
                        <h3 className="text-sm font-black text-white uppercase italic flex items-center gap-3">
-                         <Award className="w-5 h-5 text-yellow-500" /> Avaliações do Vendedor <span className="bg-white/10 px-2 py-0.5 rounded text-[10px] opacity-50 not-italic">255</span>
+                         <Award className="w-5 h-5 text-yellow-500" /> Valoraciones del Vendedor <span className="bg-white/10 px-2 py-0.5 rounded text-[10px] opacity-50 not-italic">255</span>
                        </h3>
                        
                        <div className="grid grid-cols-1 gap-4">
@@ -232,7 +232,7 @@ const SellerProfile = () => {
                           referrerPolicy="no-referrer"
                         />
                         <div className="absolute top-4 right-4 bg-black/40 backdrop-blur px-3 py-1.5 rounded-xl border border-white/10 text-[10px] font-black text-white uppercase tracking-widest">
-                          R$ {product.price?.toFixed(2)}
+                          $ {product.price?.toFixed(2)}
                         </div>
                       </div>
                       <div className="p-6 space-y-3">
@@ -246,7 +246,7 @@ const SellerProfile = () => {
                     </div>
                   )) : (
                     <div className="col-span-2 py-20 bg-[#1A1F2E]/80 rounded-3xl border border-dashed border-white/10 text-center">
-                      <p className="text-white/30 font-black uppercase italic text-sm">Este vendedor não possui produtos.</p>
+                      <p className="text-white/30 font-black uppercase italic text-sm">Este vendedor no posee productos.</p>
                     </div>
                   )}
                 </motion.div>
@@ -289,7 +289,7 @@ const ReviewCard = ({ review }: any) => (
           {review.userName?.charAt(0) || 'U'}
         </div>
         <div>
-          <div className="text-xs font-black text-white uppercase italic tracking-tight">{review.userName || 'Comprador Anônimo'}</div>
+          <div className="text-xs font-black text-white uppercase italic tracking-tight">{review.userName || 'Comprador Anónimo'}</div>
           <div className="flex text-yellow-500 mt-1">
              {[...Array(5)].map((_, i) => (
                <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'fill-current' : 'opacity-20'}`} />
@@ -303,7 +303,7 @@ const ReviewCard = ({ review }: any) => (
       {review.comment}
     </p>
     <div className="flex flex-wrap gap-2 pl-14 pt-2">
-       {['Excelente vendedor', 'Produto perfeito', 'Recomendo muito'].map(tag => (
+       {['Excelente vendedor', 'Producto perfecto', 'Lo recomiendo mucho'].map(tag => (
          <span key={tag} className="text-[8px] font-black uppercase tracking-widest text-[#7C3AED] bg-[#7C3AED]/10 px-2 py-0.5 rounded-full border border-[#7C3AED]/20">
            {tag}
          </span>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, Gamepad2, User, ShoppingCart, LogOut, LayoutDashboard, X, ArrowRight } from 'lucide-react';
+import { Search, Package, User, ShoppingCart, LogOut, LayoutDashboard, X, ArrowRight } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useSettings } from '../contexts/SettingsContext';
 import { useCart } from '../contexts/CartContext';
@@ -70,15 +70,17 @@ const Navbar = () => {
     setShowSearchDropdown(false);
   };
 
-  const storeName = settings.siteName || 'SteamLink';
+  const storeName = settings.siteName || 'MoshiShop';
 
   return (
-    <nav className="bg-steam-dark border-b border-steam-card sticky top-0 z-50">
+    <nav className="bg-steam-dark border-b border-white/5 sticky top-0 z-50 backdrop-blur-md">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
-        <Link to="/" className="flex items-center gap-2 text-xl md:text-2xl font-bold text-steam-blue flex-none">
-          <Gamepad2 className="w-6 h-6 md:w-8 md:h-8" />
-          <span className="sm:inline uppercase italic tracking-tighter">
-            {storeName.slice(0, 5)}<span className="text-white">{storeName.slice(5)}</span>
+        <Link to="/" className="flex items-center gap-2 group flex-none">
+          <div className="w-8 h-8 bg-white flex items-center justify-center rounded-lg shadow-xl group-hover:scale-110 transition-transform">
+            <Package className="w-4 h-4 text-black" />
+          </div>
+          <span className="text-xl font-black text-white italic tracking-tighter uppercase whitespace-nowrap">
+            {storeName}
           </span>
         </Link>
 
@@ -112,7 +114,7 @@ const Navbar = () => {
                 className="absolute top-full left-0 right-0 mt-2 bg-steam-dark border border-steam-card rounded-xl shadow-2xl overflow-hidden z-50 overflow-y-auto max-h-[400px]"
               >
                 <div className="p-2 border-b border-steam-card bg-steam-card/10">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-steam-accent opacity-50 px-2">Recomendações</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-steam-accent opacity-50 px-2">Recomendaciones</span>
                 </div>
                 <div className="divide-y divide-steam-card/30">
                   {filteredProducts.map((product) => (
@@ -128,7 +130,7 @@ const Navbar = () => {
                         <h4 className="text-white font-bold text-sm truncate uppercase italic tracking-tighter">{product.name}</h4>
                         <div className="flex items-center gap-2">
                           <span className="text-[10px] text-steam-blue font-black uppercase">{product.category}</span>
-                          <span className="text-xs text-steam-green font-bold italic">R$ {product.price?.toFixed(2)}</span>
+                          <span className="text-xs text-steam-green font-bold italic">$ {product.price?.toFixed(2)}</span>
                         </div>
                       </div>
                       <ArrowRight className="w-4 h-4 text-steam-accent opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />

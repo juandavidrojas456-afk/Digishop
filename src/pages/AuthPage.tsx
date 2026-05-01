@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db, handleFirestoreError, OperationType } from '../lib/firebase';
-import { Gamepad2, Mail, Lock, Chrome } from 'lucide-react';
+import { Package, Mail, Lock, Chrome } from 'lucide-react';
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -67,7 +67,7 @@ const AuthPage = () => {
       navigate('/');
     } catch (err: any) {
       if (err.code === 'auth/popup-blocked') {
-        setError('Login popup was blocked by your browser. Please allow popups and try again.');
+        setError('La ventana emergente de inicio de sesión fue bloqueada por su navegador. Por favor permita las ventanas emergentes e intente de nuevo.');
       } else {
         setError(err.message);
       }
@@ -78,11 +78,13 @@ const AuthPage = () => {
     <div className="flex items-center justify-center min-h-[80vh]">
       <div className="w-full max-w-md bg-steam-bg border border-steam-card rounded-lg p-8 space-y-6">
         <div className="text-center space-y-2">
-          <Gamepad2 className="w-12 h-12 text-steam-blue mx-auto" />
-          <h1 className="text-3xl font-bold text-white uppercase italic">
-            {isLogin ? 'Sign In' : 'Create Account'}
+          <div className="w-16 h-16 bg-white flex items-center justify-center rounded-2xl mx-auto shadow-2xl mb-4 group hover:scale-110 transition-transform cursor-pointer">
+            <Package className="w-8 h-8 text-black" />
+          </div>
+          <h1 className="text-3xl font-bold text-white uppercase italic tracking-tighter">
+            {isLogin ? 'Bienvenido de nuevo' : 'Únete a Steam offline'}
           </h1>
-          <p className="text-steam-accent text-sm">Join the largest digital marketplace</p>
+          <p className="text-steam-accent text-[10px] uppercase font-black tracking-widest opacity-50">Soluciones de Ventas Expertas para la Era Digital</p>
         </div>
 
         {error && (
@@ -93,7 +95,7 @@ const AuthPage = () => {
 
         <form onSubmit={handleAuth} className="space-y-4">
           <div className="space-y-1">
-            <label className="text-xs font-bold uppercase tracking-wider text-steam-accent">Email Address</label>
+            <label className="text-xs font-bold uppercase tracking-wider text-steam-accent">Dirección de Correo</label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-steam-accent/50" />
               <input
@@ -101,14 +103,14 @@ const AuthPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full bg-steam-dark border border-steam-card rounded py-2 pl-10 pr-4 focus:outline-none focus:border-steam-blue text-sm transition-colors"
-                placeholder="you@example.com"
+                className="w-full bg-steam-dark border border-steam-card rounded py-2 pl-10 pr-4 focus:outline-none focus:border-steam-blue text-sm transition-colors text-white"
+                placeholder="tu@ejemplo.com"
               />
             </div>
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-bold uppercase tracking-wider text-steam-accent">Password</label>
+            <label className="text-xs font-bold uppercase tracking-wider text-steam-accent">Contraseña</label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-steam-accent/50" />
               <input
@@ -116,7 +118,7 @@ const AuthPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full bg-steam-dark border border-steam-card rounded py-2 pl-10 pr-4 focus:outline-none focus:border-steam-blue text-sm transition-colors"
+                className="w-full bg-steam-dark border border-steam-card rounded py-2 pl-10 pr-4 focus:outline-none focus:border-steam-blue text-sm transition-colors text-white"
                 placeholder="••••••••"
               />
             </div>
@@ -124,15 +126,15 @@ const AuthPage = () => {
 
           <button
             type="submit"
-            className="w-full bg-steam-blue hover:bg-opacity-80 text-steam-dark font-bold py-2.5 rounded transition-all"
+            className="w-full bg-white hover:bg-opacity-90 text-black font-black py-3 rounded-xl transition-all uppercase italic tracking-widest"
           >
-            {isLogin ? 'Login' : 'Join SteamLink'}
+            {isLogin ? 'Iniciar Sesión' : 'Crear Cuenta'}
           </button>
         </form>
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-steam-card" /></div>
-          <div className="relative flex justify-center text-xs uppercase"><span className="bg-steam-bg px-2 text-steam-accent">Or continue with</span></div>
+          <div className="relative flex justify-center text-xs uppercase"><span className="bg-steam-bg px-2 text-steam-accent">O continuar con</span></div>
         </div>
 
         <button
@@ -140,16 +142,16 @@ const AuthPage = () => {
           className="w-full bg-white hover:bg-steam-accent text-black font-bold py-2.5 rounded flex items-center justify-center gap-2 transition-all"
         >
           <Chrome className="w-4 h-4" />
-          Google Account
+          Cuenta de Google
         </button>
 
         <p className="text-center text-xs text-steam-accent">
-          {isLogin ? "Don't have an account?" : "Already have an account?"}
+          {isLogin ? "¿No tienes una cuenta?" : "¿Ya tienes una cuenta?"}
           <button
             onClick={() => setIsLogin(!isLogin)}
             className="text-steam-blue ml-1 font-bold hover:underline"
           >
-            {isLogin ? 'Join now' : 'Sign in'}
+            {isLogin ? 'Únete ahora' : 'Iniciar sesión'}
           </button>
         </p>
       </div>

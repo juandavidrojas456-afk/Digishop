@@ -73,7 +73,7 @@ const Chat = () => {
                 <div>
                   <h3 className="text-sm font-black text-white uppercase italic tracking-tighter">{settings.siteName} Chat</h3>
                   <span className="text-[10px] text-green-400 font-black flex items-center gap-1 uppercase">
-                    <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-[0_0_10px_rgba(74,222,128,0.5)]" /> Atendimento Online
+                    <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-[0_0_10px_rgba(74,222,128,0.5)]" /> Soporte en Línea
                   </span>
                 </div>
               </div>
@@ -92,8 +92,8 @@ const Chat = () => {
                     <MessageSquare className="w-8 h-8 text-white" />
                   </div>
                   <div className="space-y-1">
-                    <p className="text-xs font-black text-white uppercase italic">Bem-vindo ao nosso suporte!</p>
-                    <p className="text-[10px] text-steam-accent/50 uppercase font-bold">Como podemos ajudar você hoje?</p>
+                    <p className="text-xs font-black text-white uppercase italic">¡Bienvenido a nuestro soporte!</p>
+                    <p className="text-[10px] text-steam-accent/50 uppercase font-bold">¿Cómo podemos ayudarte hoy?</p>
                   </div>
                 </div>
               )}
@@ -106,7 +106,7 @@ const Chat = () => {
                   }`}>
                     <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
                     <span className="block text-[8px] opacity-40 mt-1 uppercase font-bold text-right">
-                      {msg.createdAt ? new Date(msg.createdAt.seconds * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Vindo...'}
+                      {msg.createdAt ? new Date(msg.createdAt.seconds * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Enviando...'}
                     </span>
                   </div>
                 </div>
@@ -119,7 +119,7 @@ const Chat = () => {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Digite sua mensagem..."
+                placeholder="Escribe tu mensaje..."
                 className="flex-1 bg-steam-dark border border-steam-card rounded-2xl px-5 py-3 text-xs focus:outline-none focus:border-steam-blue text-white transition-all shadow-inner"
               />
               <button 

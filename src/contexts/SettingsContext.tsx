@@ -19,7 +19,7 @@ const defaultSettings: SiteSettings = {
   primaryColor: '#1b2838', // steam-bg
   secondaryColor: '#2a475e', // steam-card
   accentColor: '#66c0f4', // steam-blue
-  siteName: 'SteamLink Marketplace',
+  siteName: 'MoshiShop',
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);

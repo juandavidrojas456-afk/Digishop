@@ -32,10 +32,10 @@ const AdminDashboard = () => {
     stock: 10,
     description: '',
     deliveryContent: '',
-    autoMessage: 'Obrigado por sua compra! Aqui está seu acesso:',
+    autoMessage: '¡Gracias por su compra! Aquí tiene su acceso:',
     isAutoDelivery: true,
     isPhysical: false,
-    sellerName: 'GameMarket Official',
+    sellerName: 'Steam offline Official',
     sellerAvatar: '',
     sellerRating: 5,
     sellerSales: 120,
@@ -111,10 +111,10 @@ const AdminDashboard = () => {
     e.preventDefault();
     try {
       await setDoc(doc(db, 'settings', 'site'), siteSettings);
-      alert('Configurações salvas com sucesso!');
+      alert('¡Configuraciones guardadas con éxito!');
     } catch (err) {
       console.error(err);
-      alert('Erro ao salvar configurações.');
+      alert('Error al guardar configuraciones.');
     }
   };
 
@@ -134,15 +134,15 @@ const AdminDashboard = () => {
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="bg-red-500/10 border border-red-500/20 p-8 rounded-2xl max-w-md text-center space-y-4">
         <ShieldAlert className="w-16 h-16 text-red-500 mx-auto opacity-50" />
-        <h2 className="text-2xl font-black text-white uppercase italic tracking-tighter">Acesso Negado</h2>
+        <h2 className="text-2xl font-black text-white uppercase italic tracking-tighter">Acceso Denegado</h2>
         <p className="text-steam-accent text-sm leading-relaxed">
-          Sua conta atual não possui permissões administrativas. Se você é o dono da loja, certifique-se de estar logado com o e-mail correto.
+          Su cuenta actual no posee permisos administrativos. Si es el dueño de la tienda, asegúrese de estar logueado con el correo correcto.
         </p>
         <button 
           onClick={() => window.location.href = '/'}
           className="bg-steam-blue text-steam-dark font-black px-6 py-2 rounded-lg text-[10px] uppercase italic tracking-widest"
         >
-          Voltar para Início
+          Volver al Inicio
         </button>
       </div>
     </div>
@@ -153,10 +153,10 @@ const AdminDashboard = () => {
   return (
     <div className="flex flex-col lg:flex-row gap-6 md:gap-8 px-2 sm:px-0">
       <div className="w-full lg:w-64 flex flex-row lg:flex-col gap-2 overflow-x-auto pb-2 lg:pb-0 lg:overflow-visible sticky top-16 md:top-20 z-40 bg-steam-bg/80 backdrop-blur py-2">
-        <NavButton active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} icon={<LayoutDashboard className="w-4 h-4" />} label="Overview" />
-        <NavButton active={activeTab === 'products'} onClick={() => setActiveTab('products')} icon={<ShoppingBag className="w-4 h-4" />} label="Inventário" />
+        <NavButton active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} icon={<LayoutDashboard className="w-4 h-4" />} label="Resumen" />
+        <NavButton active={activeTab === 'products'} onClick={() => setActiveTab('products')} icon={<ShoppingBag className="w-4 h-4" />} label="Inventario" />
         <NavButton active={activeTab === 'orders'} onClick={() => setActiveTab('orders')} icon={<Clock className="w-4 h-4" />} label="Pedidos" />
-        <NavButton active={activeTab === 'coupons'} onClick={() => setActiveTab('coupons')} icon={<Ticket className="w-4 h-4" />} label="Cupons" />
+        <NavButton active={activeTab === 'coupons'} onClick={() => setActiveTab('coupons')} icon={<Ticket className="w-4 h-4" />} label="Cupones" />
         <NavButton active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} icon={<Settings className="w-4 h-4" />} label="Ajustes" />
       </div>
 
@@ -167,12 +167,12 @@ const AdminDashboard = () => {
               <form onSubmit={handleUpdateSettings} className="bg-steam-card/20 border border-steam-card rounded-2xl p-8 space-y-8">
                 <div className="flex items-center gap-3 text-xl font-bold text-white uppercase italic">
                   <Settings className="text-steam-blue" />
-                  Configurações Gerais da Loja
+                  Configuraciones Generales de la Tienda
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Input 
-                    label="Nome da Loja" 
+                    label="Nombre de la Tienda" 
                     value={siteSettings.storeName} 
                     onChange={(v: string) => setSiteSettings({...siteSettings, storeName: v})} 
                   />
@@ -192,33 +192,33 @@ const AdminDashboard = () => {
 
                 <div className="flex items-center gap-3 text-xl font-bold text-white uppercase italic pt-4">
                   <CreditCard className="text-steam-blue" />
-                  Dados de Recebimento (Pix Centralizado)
+                  Datos de Recepción (Pix Centralizado)
                 </div>
                 <div className="p-4 bg-steam-blue/10 border border-steam-blue/20 rounded-xl text-[10px] text-steam-blue leading-relaxed italic">
-                  Atenção: Todos os pagamentos da plataforma serão direcionados para esta chave Pix.
+                  Atención: Todos los pagos de la plataforma serán dirigidos a esta clave Pix.
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Input 
-                    label="Chave Pix Central" 
+                    label="Clave Pix Central" 
                     value={siteSettings.pixKey || ''} 
                     onChange={(v: string) => setSiteSettings({...siteSettings, pixKey: v})} 
                   />
                   <Input 
-                    label="Nome do Beneficiário" 
+                    label="Nombre del Beneficiario" 
                     value={siteSettings.pixName || ''} 
                     onChange={(v: string) => setSiteSettings({...siteSettings, pixName: v})} 
                   />
                 </div>
 
                 <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-xs text-yellow-500 leading-relaxed italic">
-                  Dica: Use URLs de imagens do Imgur ou sites similares para carregar suas próprias artes.
+                  Consejo: Use URLs de imágenes de Imgur o sitios similares para cargar sus propias artes.
                 </div>
 
                 <button 
                   type="submit"
                   className="bg-steam-blue text-steam-dark font-black py-4 px-8 rounded-xl flex items-center justify-center gap-2 hover:bg-opacity-80 transition-all shadow-xl uppercase italic tracking-widest"
                 >
-                   Salvar Alterações <CheckCircle2 className="w-5 h-5" />
+                   Guardar Cambios <CheckCircle2 className="w-5 h-5" />
                 </button>
               </form>
             </motion.div>
@@ -230,59 +230,59 @@ const AdminDashboard = () => {
                 <div className="md:col-span-2 flex items-baseline justify-between">
                   <h3 className="text-xl font-black text-white uppercase italic flex items-center gap-3">
                     {editingProduct ? <Edit2 className="text-steam-blue" /> : <Plus className="text-steam-blue" />}
-                    {editingProduct ? 'Editar Produto' : 'Novo Produto'}
+                    {editingProduct ? 'Editar Producto' : 'Nuevo Producto'}
                   </h3>
                   {editingProduct && (
-                    <button onClick={() => {setEditingProduct(null); setNewProduct(initialProductState);}} className="text-[10px] uppercase font-bold text-red-400">Cancelar Edição</button>
+                    <button onClick={() => {setEditingProduct(null); setNewProduct(initialProductState);}} className="text-[10px] uppercase font-bold text-red-400">Cancelar Edición</button>
                   )}
                 </div>
 
-                <Input label="Nome do Produto" value={newProduct.name} onChange={(v: string) => setNewProduct({...newProduct, name: v})} placeholder="Ex: Conta Netflix Premium" />
-                <Input label="Imagem (URL)" value={newProduct.imageInput} onChange={(v: string) => setNewProduct({...newProduct, imageInput: v})} placeholder="https://..." />
+                <Input label="Nombre del Producto" value={newProduct.name} onChange={(v: string) => setNewProduct({...newProduct, name: v})} placeholder="Ex: Cuenta Netflix Premium" />
+                <Input label="Imagen (URL)" value={newProduct.imageInput} onChange={(v: string) => setNewProduct({...newProduct, imageInput: v})} placeholder="https://..." />
                 
                 <div className="grid grid-cols-2 gap-4">
-                  <Input label="Preço Promocional (R$)" type="number" value={newProduct.price} onChange={(v: string) => setNewProduct({...newProduct, price: parseFloat(v)})} />
-                  <Input label="Preço Original (R$)" type="number" value={newProduct.originalPrice} onChange={(v: string) => setNewProduct({...newProduct, originalPrice: parseFloat(v)})} />
+                  <Input label="Precio Promocional ($)" type="number" value={newProduct.price} onChange={(v: string) => setNewProduct({...newProduct, price: parseFloat(v)})} />
+                  <Input label="Precio Original ($)" type="number" value={newProduct.originalPrice} onChange={(v: string) => setNewProduct({...newProduct, originalPrice: parseFloat(v)})} />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-black uppercase text-steam-accent opacity-60">Categoria</label>
+                    <label className="text-[10px] font-black uppercase text-steam-accent opacity-60">Categoría</label>
                     <select 
                       value={newProduct.category} 
                       onChange={e => setNewProduct({...newProduct, category: e.target.value})}
                       className="bg-steam-dark border border-steam-card rounded-xl p-3 text-sm text-white focus:border-steam-blue outline-none"
                     >
-                      <option value="Assinaturas Premium">Assinaturas Premium</option>
-                      <option value="Serviços Digitais">Serviços Digitais</option>
-                      <option value="Steam">Steam</option>
+                      <option value="Cuentas">Cuentas</option>
+                      <option value="Steam Offline">Steam Offline</option>
+                      <option value="Steam Keys">Steam Keys</option>
                       <option value="Epic Games">Epic Games</option>
-                      <option value="Contas Email">Contas Email</option>
                       <option value="Discord">Discord</option>
-                      <option value="Redes Sociais">Redes Sociais</option>
+                      <option value="Software">Software</option>
+                      <option value="Redes Sociales">Redes Sociales</option>
                       <option value="Cursos">Cursos</option>
                     </select>
                   </div>
                    <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-black uppercase text-steam-accent opacity-60">Selo (Badge)</label>
+                    <label className="text-[10px] font-black uppercase text-steam-accent opacity-60">Sello (Badge)</label>
                     <select 
                       value={newProduct.badgeType} 
                       onChange={e => setNewProduct({...newProduct, badgeType: e.target.value})}
                       className="bg-steam-dark border border-steam-card rounded-xl p-3 text-sm text-white focus:border-steam-blue outline-none"
                     >
-                      <option value="CONTA">CONTA</option>
+                      <option value="CONTA">CUENTA</option>
                       <option value="ITEM">ITEM</option>
                       <option value="KEYS">KEYS</option>
-                      <option value="SERVICE">SERVIÇO</option>
-                      <option value="CARD">CARTÃO</option>
+                      <option value="SERVICE">SERVICIO</option>
+                      <option value="CARD">TARJETA</option>
                     </select>
                   </div>
-                  <Input label="Estoque" type="number" value={newProduct.stock} onChange={(v: string) => setNewProduct({...newProduct, stock: parseInt(v)})} />
+                  <Input label="Stock" type="number" value={newProduct.stock} onChange={(v: string) => setNewProduct({...newProduct, stock: parseInt(v)})} />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <Input label="Nome do Vendedor" value={newProduct.sellerName} onChange={(v: string) => setNewProduct({...newProduct, sellerName: v})} placeholder="Ex: GameMarket Official" />
-                  <Input label="Vendas Totais" type="number" value={newProduct.sellerSales} onChange={(v: string) => setNewProduct({...newProduct, sellerSales: parseInt(v)})} />
+                  <Input label="Nombre del Vendedor" value={newProduct.sellerName} onChange={(v: string) => setNewProduct({...newProduct, sellerName: v})} placeholder="Ex: Steam offline Official" />
+                  <Input label="Ventas Totales" type="number" value={newProduct.sellerSales} onChange={(v: string) => setNewProduct({...newProduct, sellerSales: parseInt(v)})} />
                 </div>
 
                 <div className="flex items-center gap-3 bg-steam-dark/50 p-4 rounded-xl border border-steam-card">
@@ -293,21 +293,21 @@ const AdminDashboard = () => {
                     onChange={e => setNewProduct({...newProduct, isPhysical: e.target.checked})}
                     className="w-5 h-5 accent-steam-blue"
                   />
-                  <label htmlFor="isPhysical" className="text-sm font-bold text-white uppercase italic cursor-pointer">Produto Físico (Necessário Frete)</label>
+                  <label htmlFor="isPhysical" className="text-sm font-bold text-white uppercase italic cursor-pointer">Producto Físico (Requiere Envío)</label>
                 </div>
 
                 <div className="md:col-span-2 space-y-4">
                   <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-black uppercase text-steam-accent opacity-60">Descrição do Produto</label>
+                    <label className="text-[10px] font-black uppercase text-steam-accent opacity-60">Descripción del Producto</label>
                     <textarea 
                       value={newProduct.description} 
                       onChange={e => setNewProduct({...newProduct, description: e.target.value})}
                       className="bg-steam-dark border border-steam-card rounded-xl p-4 text-sm text-white h-32 focus:border-steam-blue outline-none"
-                      placeholder="Descreva os detalhes, benefícios e requisitos do produto..."
+                      placeholder="Describa los detalles, beneficios y requisitos del producto..."
                     />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-black uppercase text-steam-accent opacity-60">Mensagem Automática (Enviada no Chat)</label>
+                    <label className="text-[10px] font-black uppercase text-steam-accent opacity-60">Mensaje Automático (Enviado al Chat)</label>
                     <textarea 
                       value={newProduct.autoMessage} 
                       onChange={e => setNewProduct({...newProduct, autoMessage: e.target.value})}
@@ -315,18 +315,18 @@ const AdminDashboard = () => {
                     />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label className="text-[10px] font-black uppercase text-steam-accent opacity-60">Conteúdo da Entrega (Keys/Login)</label>
+                    <label className="text-[10px] font-black uppercase text-steam-accent opacity-60">Contenido de la Entrega (Keys/Login)</label>
                     <textarea 
                       value={newProduct.deliveryContent} 
                       onChange={e => setNewProduct({...newProduct, deliveryContent: e.target.value})}
                       className="bg-steam-dark border border-steam-card rounded-xl p-4 text-sm text-white h-24 focus:border-steam-blue outline-none border-dashed"
-                      placeholder="Coloque aqui as chaves ou dados de acesso..."
+                      placeholder="Coloque aquí las llaves o datos de acceso..."
                     />
                   </div>
                 </div>
 
                 <button type="submit" className="md:col-span-2 bg-steam-blue text-steam-dark font-black py-4 rounded-xl uppercase italic tracking-widest hover:scale-[1.02] transition-all shadow-xl">
-                  {editingProduct ? 'ATUALIZAR PRODUTO' : 'PUBLICAR OFERTA AGORA'}
+                  {editingProduct ? 'ACTUALIZAR PRODUCTO' : 'PUBLICAR OFERTA AHORA'}
                 </button>
               </form>
 
@@ -334,10 +334,10 @@ const AdminDashboard = () => {
                 <table className="w-full text-left">
                   <thead className="bg-steam-dark text-[10px] text-steam-accent uppercase font-black tracking-widest border-b border-steam-card">
                     <tr>
-                      <th className="px-6 py-4">Produto</th>
-                      <th className="px-6 py-4">Selo</th>
-                      <th className="px-6 py-4">Preço</th>
-                      <th className="px-6 py-4">Ações</th>
+                      <th className="px-6 py-4">Producto</th>
+                      <th className="px-6 py-4">Sello</th>
+                      <th className="px-6 py-4">Precio</th>
+                      <th className="px-6 py-4">Acciones</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-steam-card/20">
@@ -353,7 +353,7 @@ const AdminDashboard = () => {
                           <span className="text-[10px] bg-steam-blue/20 text-steam-blue px-2 py-0.5 rounded font-black">{p.badgeType || 'N/A'}</span>
                           {p.isPhysical && <span className="text-[10px] bg-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded font-black ml-2 uppercase italic">Físico</span>}
                         </td>
-                        <td className="px-6 py-4 text-sm font-bold text-steam-green">R$ {p.price.toFixed(2)}</td>
+                        <td className="px-6 py-4 text-sm font-bold text-steam-green">$ {p.price.toFixed(2)}</td>
                         <td className="px-6 py-4">
                           <div className="flex gap-4">
                             <button onClick={() => {setEditingProduct(p); setNewProduct({...p, imageInput: p.images?.[0]});}} className="text-steam-accent hover:text-steam-blue"><Edit2 className="w-4 h-4" /></button>
@@ -372,22 +372,22 @@ const AdminDashboard = () => {
             <motion.div key="coupons" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
               <form onSubmit={handleAddCoupon} className="bg-steam-card/20 border border-steam-card rounded-2xl p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <h3 className="md:col-span-2 text-xl font-black text-white uppercase italic flex items-center gap-3">
-                  <Ticket className="text-steam-blue" /> Gerenciar Cupons
+                  <Ticket className="text-steam-blue" /> Gestionar Cupones
                 </h3>
-                <Input label="Código do Cupom" value={newCoupon.code} onChange={(v: string) => setNewCoupon({...newCoupon, code: v.toUpperCase()})} placeholder="EX: NATAL20" />
-                <Input label="Valor do Desconto" type="number" value={newCoupon.value} onChange={(v: string) => setNewCoupon({...newCoupon, value: parseFloat(v)})} />
+                <Input label="Código del Cupón" value={newCoupon.code} onChange={(v: string) => setNewCoupon({...newCoupon, code: v.toUpperCase()})} placeholder="EX: NATAL20" />
+                <Input label="Valor del Descuento" type="number" value={newCoupon.value} onChange={(v: string) => setNewCoupon({...newCoupon, value: parseFloat(v)})} />
                 <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-black uppercase text-steam-accent opacity-60">Tipo de Desconto</label>
+                  <label className="text-[10px] font-black uppercase text-steam-accent opacity-60">Tipo de Descuento</label>
                   <select 
                     value={newCoupon.discountType} 
                     onChange={e => setNewCoupon({...newCoupon, discountType: e.target.value})}
                     className="bg-steam-dark border border-steam-card rounded-xl p-3 text-sm text-white focus:border-steam-blue outline-none"
                   >
-                    <option value="percentage">Porcentagem (%)</option>
-                    <option value="fixed">Fixo (R$)</option>
+                    <option value="percentage">Porcentaje (%)</option>
+                    <option value="fixed">Fijo ($)</option>
                   </select>
                 </div>
-                <button type="submit" className="bg-steam-blue text-steam-dark font-black py-3 rounded-xl uppercase italic tracking-widest hover:bg-opacity-80 transition-all self-end">Criar Cupom</button>
+                <button type="submit" className="bg-steam-blue text-steam-dark font-black py-3 rounded-xl uppercase italic tracking-widest hover:bg-opacity-80 transition-all self-end">Crear Cupón</button>
               </form>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -396,7 +396,7 @@ const AdminDashboard = () => {
                     <div>
                       <div className="text-lg font-black text-white">{c.code}</div>
                       <div className="text-[10px] font-bold text-steam-blue uppercase">
-                        {c.value}{c.discountType === 'percentage' ? '%' : ' R$'} OFF
+                        {c.value}{c.discountType === 'percentage' ? '%' : ' $'} OFF
                       </div>
                     </div>
                     <button onClick={() => deleteDoc(doc(db, 'coupons', c.id))} className="text-red-500/50 hover:text-red-500"><Trash2 className="w-5 h-5" /></button>
@@ -409,16 +409,16 @@ const AdminDashboard = () => {
           {activeTab === 'overview' && (
             <motion.div key="overview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard label="Receita Total" value={`R$ ${stats.totalEarnings.toFixed(2)}`} icon={<TrendingUp className="text-green-500" />} />
-                <StatCard label="Produtos Ativos" value={stats.productCount} icon={<ShoppingBag className="text-yellow-500" />} />
-                <StatCard label="Novos Pedidos" value={orders.length} icon={<Clock className="text-steam-blue" />} />
+                <StatCard label="Ingresos Totales" value={`$ ${stats.totalEarnings.toFixed(2)}`} icon={<TrendingUp className="text-green-500" />} />
+                <StatCard label="Productos Activos" value={stats.productCount} icon={<ShoppingBag className="text-yellow-500" />} />
+                <StatCard label="Nuevos Pedidos" value={orders.length} icon={<Clock className="text-steam-blue" />} />
                 <StatCard label="Total Clientes" value={stats.userCount} icon={<Users className="text-indigo-500" />} />
               </div>
               
               <div className="bg-steam-card/10 border border-steam-card rounded-2xl p-12 text-center flex flex-col items-center justify-center space-y-4">
                 <LayoutDashboard className="w-16 h-16 text-steam-blue opacity-20" />
-                <h3 className="text-xl font-black text-white uppercase italic tracking-widest">Painel de Controle Central</h3>
-                <p className="text-steam-accent text-sm max-w-md opacity-60">Utilize as abas acima para gerenciar seus produtos, cupons e configurações globais da plataforma.</p>
+                <h3 className="text-xl font-black text-white uppercase italic tracking-widest">Panel de Control Central</h3>
+                <p className="text-steam-accent text-sm max-w-md opacity-60">Utilice las pestañas de arriba para gestionar sus productos, cupones y configuraciones globales de la plataforma.</p>
               </div>
             </motion.div>
           )}
